@@ -20,9 +20,9 @@
 /storage/pail
 
 # Laravel build files
-/public/hot
-/public/build
-/public/storage
+# /public/hot
+# /public/build
+# /public/storage
 
 # ---------------------------
 # OS / Editor / Tooling
