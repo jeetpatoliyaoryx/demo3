@@ -1,0 +1,52 @@
+# ---------------------------
+# Laravel & Framework Files
+# ---------------------------
+/vendor/
+/node_modules/
+
+# Laravel environment files
+.env
+.env.*.backup
+.env.production
+.env.backup
+
+# Laravel caches & compiled files
+.phpunit.result.cache
+.phpunit.cache
+.phpunit.cache/
+/storage/*.key
+/storage/framework/*
+/storage/logs/*
+/storage/pail
+
+# Laravel build files
+/public/hot
+/public/build
+/public/storage
+
+# ---------------------------
+# OS / Editor / Tooling
+# ---------------------------
+.DS_Store
+Thumbs.db
+*.log
+
+# PHP tools
+.phpactor.json
+/auth.json
+
+# IDEs
+/.idea
+/.vscode
+/.fleet
+/.zed
+
+# Nova
+/.nova
+
+# ---------------------------
+# Vagrant / Homestead
+# ---------------------------
+Homestead.json
+Homestead.yaml
+
