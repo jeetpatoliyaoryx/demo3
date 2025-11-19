@@ -11,6 +11,29 @@
 .kv-file-zoom{
     display: none !important;
 }
+.video-preview-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.remove-video {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #ff4d4d;
+    color: white;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    line-height: 22px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.remove-video:hover {
+    background: #ff1a1a;
+}
 </style>
 @endsection 
 @section('content')
@@ -27,7 +50,6 @@
 
                 </div>
 
-                <!-- New Product Add Start -->
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
@@ -228,17 +250,27 @@
                                                     </div>
 
                                                      <div class="mb-4 row align-items-center">
-                                                        <label class="form-label-title col-sm-2 mb-0">Video File </label>
+                                                        <label class="form-label-title col-sm-2 mb-0">Video File</label>
                                                         <div class="col-sm-10">
-                                                              <input name="video_file" accept="video/mp4,video/x-m4v,video/*" type="file" class="form-control" placeholder="Video File" style="padding-top: 2px;" value="{{ $product->video_file }}">
 
-                                                               @if(!empty($product->getVideoFile()))
-                                                                  <video width="220" height="140" controls autoplay>
-                                                                       <source src="{{ $product->getVideoFile(); }}" type="video/mp4">
-                                                                  </video>
-                                                               @endif
+                                                            <input name="video_file" accept="video/mp4,video/*" type="file" class="form-control">
+
+                                                            @if(!empty($product->getVideoFile()))
+                                                                <div class="video-preview-wrapper mt-4" id="videoPreviewWrapper">
+
+                                                                    <span class="remove-video" id="removeVideo">&times;</span>
+
+                                                                    <video width="220" height="140" controls>
+                                                                        <source src="{{ $product->getVideoFile() }}" type="video/mp4">
+                                                                    </video>
+                                                                </div>
+
+                                                                <input type="hidden" name="delete_video" id="deleteVideoInput" value="0">
+                                                            @endif
+
                                                         </div>
                                                     </div>
+
 
                                                     <div class="mb-4 row align-items-center" id="picturesBloc">
                                                         <label class="form-label-title col-sm-2 mb-0">Image </label>
@@ -279,14 +311,27 @@
                         </div>
                     </div>
                 </div>
-                <!-- New Product Add End -->
 
            </div>
-            <!-- Container-fluid End -->
 
 @endsection
 
 @section('script')
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const removeBtn = document.getElementById('removeVideo');
+    const previewWrapper = document.getElementById('videoPreviewWrapper');
+    const deleteInput = document.getElementById('deleteVideoInput');
+
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function () {
+            previewWrapper.style.display = "none";
+            deleteInput.value = 1;
+        });
+    }
+});
+</script>
+
 
 <script type="text/javascript" src="{{ url('frontend/tinymce/tinymce.min.js') }}"></script>
 
@@ -345,7 +390,6 @@
                    @endforeach
                ],
            });
-           /* Delete picture */
        $('#pictureField').on('filepredelete', function(jqXHR) {
            var abort = true;
            if (confirm("Are you sure you want to delete this picture?")) {

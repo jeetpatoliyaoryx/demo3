@@ -141,13 +141,13 @@
                                                     </div>
 
                                                     <hr>
-                                                        <div class="mb-4 row align-items-center">
+                                                      <div class="mb-4 row align-items-center">
                                                         <label class="form-label-title col-sm-2 mb-0">Image 1</label>
                                                         <div class="col-sm-10">
                                                             <input name="image_1" type="file" class="file picimg">  
                                                              @if(!empty($getRecord->image_1))
-                                                          <img src="{{ $getRecord->getImage1() }}" style="height:100px; width: 80px;"><br>
-                                                        @endif
+                                                              <img src="{{ $getRecord->getImage1() }}" style="height:100px; width: 80px;"><br>
+                                                            @endif
                                                             <span class="highlight-text pt-2">(<b>Important:-</b> Add Only Square Image, i.e 1000X1000 or 2000X2000)</span>
                                                         </div>
                                                     </div>
@@ -322,6 +322,42 @@
 @endsection
 
 @section('script')
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const inputs = document.querySelectorAll('input[type="file"][name^="image"]');
+
+    inputs.forEach(function (input) {
+        input.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+
+            img.onload = function () {
+
+                if (img.width === img.height) {
+
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wrong Size!',
+                        text: 'Please upload ONLY a square image (1000×1000, 2000×2000, etc.)',
+                    });
+
+                    event.target.value = ""; 
+                }
+
+                URL.revokeObjectURL(img.src);
+            };
+        });
+    });
+
+});
+</script>
+
+
 
 <script type="text/javascript">
 

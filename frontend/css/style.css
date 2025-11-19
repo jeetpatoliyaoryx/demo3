@@ -19699,7 +19699,8 @@ ul.list-text.type-number {
         text-align: left !important;
         padding: 0 !important;
     }
-    .tf-table-page-cart td{
+
+    .tf-table-page-cart td {
         padding: 10px 0;
     }
 
@@ -19718,10 +19719,12 @@ ul.list-text.type-number {
     .tf-table-page-cart .btn-remove {
         display: flex !important;
     }
-    .tf-table-page-cart .tf-cart-item_product{
+
+    .tf-table-page-cart .tf-cart-item_product {
         padding-top: 0;
     }
-    .tf-table-page-cart .tf-cart-item .tf-cart-item_product .cart-info{
+
+    .tf-table-page-cart .tf-cart-item .tf-cart-item_product .cart-info {
         gap: 5px;
         grid-gap: 5px;
     }
@@ -22071,4 +22074,20 @@ i.icon-heart {
 
 
 
-/* 6-11-25 changes end */
+
+.mobile-only {
+    display: none;
+}
+
+.desktop-only {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .mobile-only {
+        display: block;
+    }
+    .desktop-only {
+        display: none;
+    }
+}
