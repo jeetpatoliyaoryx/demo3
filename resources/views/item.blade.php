@@ -48,7 +48,7 @@
                                              <div class="swiper-slide stagger-item" data-color="gray">
                                                 <div class="item">
                                                     <video controls style="">
-                                                        <source src="{{ $product->getVideoFile(); }}" type="video/mp4">
+                                                        <source src="{{ $product->getVideoFile() }}" type="video/mp4">
                                                     </video>
                                                 </div>
                                              </div>
@@ -77,7 +77,7 @@
                                             <div class="swiper-slide" data-color="gray">
                                                 <div class="item">
                                                    <video controls style="">
-                                                      <source src="{{ $product->getVideoFile(); }}" type="video/mp4">
+                                                      <source src="{{ $product->getVideoFile() }}" type="video/mp4">
                                                    </video>
                                                 </div>
                                             </div>

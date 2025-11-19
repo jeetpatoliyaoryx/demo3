@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
-        @php
-    $getHomeHeader = App\Models\HeaderModel::first();
+    @php
+        $getHomeHeader = App\Models\HeaderModel::first();
     @endphp
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="">
-    <meta name="keywords"
-        content="">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="{{ $getHomeHeader->getFaviconLogo() }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ $getHomeHeader->getFaviconLogo() }}" type="image/x-icon">
@@ -54,8 +53,7 @@
 
     <!-- Responsive css-->
     <link rel="stylesheet" type="text/css" href="{{ url('backend/assets/css/responsive.css') }}">
-     <style type="text/css">
-            
+    <style type="text/css">
         /* .sidebar-link.active,
         .sidebar-submenu a.active {
             background-color: #007bff !important;
@@ -70,25 +68,23 @@
         .sidebar-submenu[style*="display:block"] {
             display: block;
         } */
-
-
-        </style>
-        @yield('style')                                
+    </style>
+    @yield('style')
 
 </head>
 
 <body>
 
-               @include('backend.layouts._header')
+    @include('backend.layouts._header')
 
-               @include('backend.layouts._sidebar')
+    @include('backend.layouts._sidebar')
 
-               @yield('content')
+    @yield('content')
 
-               @include('backend.layouts._footer')
+    @include('backend.layouts._footer')
 
-        </div>
-        <!-- Page Body End -->
+    </div>
+    <!-- Page Body End -->
     </div>
     <!-- page-wrapper End -->
 
@@ -160,13 +156,16 @@
     <!-- ratio js -->
     <script src="{{ url('backend/assets/js/ratio.js') }}"></script>
 
+     <!-- Sweet Alert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Theme js -->
     <script src="{{ url('backend/assets/js/script.js') }}"></script>
 
-     @yield('script')
-         <script type="text/javascript">
+    @yield('script')
+    <script type="text/javascript">
 
-         </script>
+    </script>
 
     <!-- <script>
         $(document).ready(function () {

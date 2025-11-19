@@ -23,63 +23,59 @@ class CategoryController extends Controller
         //     $category->slug = $slug;
         //     $category->save();
         // }
-        
+
 
         $data['meta_title'] = "Category";
         $data['getParentCategory'] = CategoryModel::getParentCategory(0);
-        return view('backend.category.list',$data);
+        return view('backend.category.list', $data);
     }
 
     public function add()
     {
         $data['meta_title'] = "Add Category";
         $data['getParentCategory'] = CategoryModel::getParentCategoryAdmin(0);
-        return view('backend.category.add',$data);
+        return view('backend.category.add', $data);
     }
 
     public function PostCategory(Request $request)
     {
         $parent_id = 0;
-        if(!empty($request->parent_id))
-        {
-            if(count($request->parent_id) == 1)
-            {
+        if (!empty($request->parent_id)) {
+            if (count($request->parent_id) == 1) {
                 $parent_id = !empty($request->parent_id['0']) ? $request->parent_id['0'] : 0;
-            }
-            else
-            {
+            } else {
                 $array_filter = array_filter($request->parent_id);
 
                 $parent_id = !empty(last($array_filter)) ? last($array_filter) : 0;
             }
         }
-        
+
         $category = new CategoryModel;
         $category->parent_id = $parent_id;
         $category->name = trim($request->name);
         $category->status = trim($request->status);
-        
-        if(!empty($request->file('category_image'))){
-            if(!empty($category->category_image) && file_exists('upload/category_image/'.$category->category_image)){
-                unlink('upload/category_image/'.$category->category_image);
+
+        if (!empty($request->file('category_image'))) {
+            if (!empty($category->category_image) && file_exists('upload/category_image/' . $category->category_image)) {
+                unlink('upload/category_image/' . $category->category_image);
             }
 
             $file = $request->file('category_image');
             $randomStr = Str::random(30);
-            $filename  = $randomStr .'.'.$file->getClientOriginalExtension();
-            $file->move('upload/category_image/',$filename);
+            $filename = $randomStr . '.' . $file->getClientOriginalExtension();
+            $file->move('upload/category_image/', $filename);
             $category->category_image = $filename;
         }
 
-          if(!empty($request->file('category_banner_image'))){
-            if(!empty($category->category_banner_image) && file_exists('upload/category_image/'.$category->category_banner_image)){
-                unlink('upload/category_image/'.$category->category_banner_image);
+        if (!empty($request->file('category_banner_image'))) {
+            if (!empty($category->category_banner_image) && file_exists('upload/category_image/' . $category->category_banner_image)) {
+                unlink('upload/category_image/' . $category->category_banner_image);
             }
 
             $file = $request->file('category_banner_image');
             $randomStr = Str::random(30);
-            $filename  = $randomStr .'.'.$file->getClientOriginalExtension();
-            $file->move('upload/category_image/',$filename);
+            $filename = $randomStr . '.' . $file->getClientOriginalExtension();
+            $file->move('upload/category_image/', $filename);
             $category->category_banner_image = $filename;
         }
 
@@ -87,18 +83,17 @@ class CategoryController extends Controller
 
         $category->save();
 
-        $slug   = Str::slug($request->name, '-');
-        $getSlug  = CategoryModel::getSlug($slug);
-        if(!empty($getSlug))
-        {
-            $slug = $slug.'-'.$category->id;
+        $slug = Str::slug($request->name, '-');
+        $getSlug = CategoryModel::getSlug($slug);
+        if (!empty($getSlug)) {
+            $slug = $slug . '-' . $category->id;
         }
 
         $category->slug = trim($slug);
         $category->save();
-        
+
         // return redirect('admin/category')->with('success', "Category Successfully saved");
-        return redirect()->back()->with('success', "Category Successfully saved");
+        return redirect('admin/category')->with('success', "Category Successfully saved");
     }
 
     public function edit($id)
@@ -107,41 +102,51 @@ class CategoryController extends Controller
         $data['getParentCategory'] = CategoryModel::getParentCategory(0);
         $getrecord = CategoryModel::get_single($id);
         $data['getrecord'] = $getrecord;
-        return view('backend.category.edit',$data);   
+        return view('backend.category.edit', $data);
     }
 
     public function post_edit($id, Request $request)
-    {   
-        $category         = CategoryModel::get_single($id);
-        $category->name   = trim($request->name);
+    {
+        $parent_id = 0;
+
+        if (!empty($request->parent_id)) {
+            if (is_array($request->parent_id)) {
+                $parent_id = $request->parent_id[0] ?? 0;
+            } else {
+                $parent_id = $request->parent_id;
+            }
+        }
+        $category = CategoryModel::get_single($id);
+        $category->name = trim($request->name);
+        $category->parent_id = $parent_id;
         $category->status = trim($request->status);
 
         if ($request->has('status')) {
-           $this->updateChildStatus($category->id, $request->status);
+            $this->updateChildStatus($category->id, $request->status);
         }
 
-     
-        if(!empty($request->file('category_image'))){
-            if(!empty($category->category_image) && file_exists('upload/category_image/'.$category->category_image)){
-                unlink('upload/category_image/'.$category->category_image);
+
+        if (!empty($request->file('category_image'))) {
+            if (!empty($category->category_image) && file_exists('upload/category_image/' . $category->category_image)) {
+                unlink('upload/category_image/' . $category->category_image);
             }
 
             $file = $request->file('category_image');
             $randomStr = Str::random(30);
-            $filename  = $randomStr .'.'.$file->getClientOriginalExtension();
-            $file->move('upload/category_image/',$filename);
+            $filename = $randomStr . '.' . $file->getClientOriginalExtension();
+            $file->move('upload/category_image/', $filename);
             $category->category_image = $filename;
         }
 
-        if(!empty($request->file('category_banner_image'))){
-            if(!empty($category->category_banner_image) && file_exists('upload/category_image/'.$category->category_banner_image)){
-                unlink('upload/category_image/'.$category->category_banner_image);
+        if (!empty($request->file('category_banner_image'))) {
+            if (!empty($category->category_banner_image) && file_exists('upload/category_image/' . $category->category_banner_image)) {
+                unlink('upload/category_image/' . $category->category_banner_image);
             }
 
             $file = $request->file('category_banner_image');
             $randomStr = Str::random(30);
-            $filename  = $randomStr .'.'.$file->getClientOriginalExtension();
-            $file->move('upload/category_image/',$filename);
+            $filename = $randomStr . '.' . $file->getClientOriginalExtension();
+            $file->move('upload/category_image/', $filename);
             $category->category_banner_image = $filename;
         }
 
@@ -167,55 +172,47 @@ class CategoryController extends Controller
     public function getParent(Request $request)
     {
         $getParentCategory = CategoryModel::getParentCategory($request->parent_id);
-        if($getParentCategory->count() > 0)
-        {
+        if ($getParentCategory->count() > 0) {
             $html = '';
             $html .= '<div style="margin-bottom: 5px;">
                       <select class="form-control SubParentCategory"  name="parent_id[]">
                           <option value="">None</option>';
-                        foreach ($getParentCategory as $key => $value) 
-                        {
-                            $html .= '<option value="'.$value->id.'">'.$value->name.'</option>';
-                        }   
-                      $html .= '</select>
+            foreach ($getParentCategory as $key => $value) {
+                $html .= '<option value="' . $value->id . '">' . $value->name . '</option>';
+            }
+            $html .= '</select>
                    </div><div id="appendSubCategory"></div>';
 
-           $json['success'] = $html;    
+            $json['success'] = $html;
+        } else {
+            $json['success'] = 0;
         }
-        else
-        {
-          $json['success'] = 0;       
-        }
-        
-       echo json_encode($json);
+
+        echo json_encode($json);
     }
 
     public function getSubParent(Request $request)
     {
         $getParentCategory = CategoryModel::getParentCategory($request->parent_id);
-        if($getParentCategory->count() > 0)
-        {
+        if ($getParentCategory->count() > 0) {
             $html = '';
             $html .= '<div style="margin-bottom: 5px;">
                       <select class="form-control"  name="parent_id[]">
                           <option value="">None</option>';
-                        foreach ($getParentCategory as $key => $value) 
-                        {
-                            $html .= '<option value="'.$value->id.'">'.$value->name.'</option>';
-                        }   
-                      $html .= '</select>
+            foreach ($getParentCategory as $key => $value) {
+                $html .= '<option value="' . $value->id . '">' . $value->name . '</option>';
+            }
+            $html .= '</select>
                    </div>';
 
-           $json['success'] = $html;
-          
-        }
-        else
-        {
-          $json['success'] = 0;       
+            $json['success'] = $html;
+
+        } else {
+            $json['success'] = 0;
         }
 
-         echo json_encode($json);
+        echo json_encode($json);
     }
 
-    
+
 }

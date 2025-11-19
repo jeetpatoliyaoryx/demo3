@@ -51,14 +51,25 @@
                                                     </div>
 
                                                     <div class="mb-4 row align-items-center">
-                                                        <label class="form-label-title col-sm-2 mb-0">Banner Image </label>
+                                                        <label class="form-label-title col-sm-2 mb-0">Desktop Image </label>
                                                         <div class="col-sm-10">
-                                                            <input name="banner_image" type="file" class="file picimg">  
-                                                          @if(!empty($getrecord->banner_image))
-                                                          <img src="{{ $getrecord->getBannerImage() }}" style="height:100px;"> <br>
+                                                            <input name="desktop_banner" type="file" class="file picimg">  
+                                                          @if(!empty($getrecord->desktop_banner))
+                                                          <img src="{{ $getrecord->get_desktop_banner() }}" style="height:100px;"> <br>
                                                           @endif
                                                                   {{-- <img id="bannerPreview" class="banner-preview" style="display:none;" /> --}}
                                                         <span class="pt-2 highlight-text">(<b>Important:-</b> Please upload an image with resolution of exactly 1440×548 px.)</span>
+                                                        </div>
+                                                    </div>
+                                                     <div class="mb-4 row align-items-center">
+                                                        <label class="form-label-title col-sm-2 mb-0">Mobile Image </label>
+                                                        <div class="col-sm-10">
+                                                            <input name="mobile_banner" type="file" class="file picimg">  
+                                                          @if(!empty($getrecord->mobile_banner))
+                                                          <img src="{{ $getrecord->get_mobile_banner() }}" style="height:100px;"> <br>
+                                                          @endif
+                                                                  {{-- <img id="bannerPreview" class="banner-preview" style="display:none;" /> --}}
+                                                       
                                                         </div>
                                                     </div>
 
@@ -159,7 +170,7 @@
 @section('script')
 
 <script>
-document.querySelector('input[name="banner_image"]').addEventListener('change', function(event) {
+document.querySelector('input[name="desktop_banner"]').addEventListener('change', function(event) {
     const file = event.target.files[0];
     if (!file) return;
 

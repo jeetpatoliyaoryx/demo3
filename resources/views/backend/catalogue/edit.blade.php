@@ -89,7 +89,42 @@
 @endsection
 @section('script')
 
+  <script>
+            document.querySelector('input[name="catalogue_image"]').addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (!file) return;
 
+                const img = new Image();
+                img.src = URL.createObjectURL(file);
+
+                img.onload = function () {
+                    if (img.width === 1440 && img.height === 548) {
+                        document.getElementById('bannerPreview').src = img.src;
+                        document.getElementById('bannerPreview').style.display = "block";
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Perfect!',
+                            text: 'Image size is correct: 1440×548 px.',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Wrong Size!',
+                            text: 'Please upload an image with dimensions exactly 1440×548 px.',
+                        });
+
+                        event.target.value = ""; // clear input
+                        document.getElementById('bannerPreview').style.display = "none";
+                    }
+                    URL.revokeObjectURL(img.src);
+                };
+            });
+        </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="{{ url('backend/assets/js/select2.min.js') }}"></script>
 <script src="{{ url('backend/assets/js/select2-custom.js') }}"></script>

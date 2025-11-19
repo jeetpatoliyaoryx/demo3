@@ -69,6 +69,40 @@
 
 @endsection
 @section('script')
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const inputs = document.querySelectorAll('input[type="file"][name^="instagram_image"]');
+
+    inputs.forEach(function (input) {
+        input.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+
+            img.onload = function () {
+
+                if (img.width === img.height) {
+
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Wrong Size!',
+                        text: 'Please upload ONLY a square image (1000×1000, 2000×2000, etc.)',
+                    });
+
+                    event.target.value = ""; 
+                }
+
+                URL.revokeObjectURL(img.src);
+            };
+        });
+    });
+
+});
+</script>
 <script type="text/javascript">
 
      

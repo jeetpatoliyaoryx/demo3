@@ -23,36 +23,35 @@ class ProductController extends Controller
     {
         $data['getRecord'] = ProductModel::getRecord($request);
         $data['meta_title'] = "Product List";
-        return view('backend.product.list', $data);               
-	}
+        return view('backend.product.list', $data);
+    }
 
     public function add(Request $request)
     {
         $data['meta_title'] = "Product";
-        return view('backend.product.add', $data);    
+        return view('backend.product.add', $data);
     }
 
 
     public function PostProduct(Request $request)
     {
-        $title  = trim($request->title);
+        $title = trim($request->title);
 
         $product = new ProductModel;
         $product->title = $title;
         $product->is_public = 1;
         $product->save();
 
-        $slug   = Str::slug($title, '-');
-        $getSlug  = ProductModel::getSlug($slug);
-        if(!empty($getSlug))
-        {
-            $slug = $slug.'-'.$product->id;
+        $slug = Str::slug($title, '-');
+        $getSlug = ProductModel::getSlug($slug);
+        if (!empty($getSlug)) {
+            $slug = $slug . '-' . $product->id;
         }
-    
+
         $product->slug = $slug;
         $product->save();
 
-        return redirect('admin/product/edit/'.$product->id)->with('success', "Product Successfully saved");
+        return redirect('admin/product/edit/' . $product->id)->with('success', "Product Successfully saved");
     }
 
     public function edit($id)
@@ -64,13 +63,12 @@ class ProductController extends Controller
         $data['product'] = $product;
 
         $data['getcolorproduct'] = ProductColorModel::getRecord($id);
-        $data['getsizeproduct']  = ProductSizeModel::getRecord($id);
+        $data['getsizeproduct'] = ProductSizeModel::getRecord($id);
 
         $first_category = 0;
         $second_category = 0;
         $last_category = 0;
-        if(!empty($product->category_id)) 
-        {
+        if (!empty($product->category_id)) {
             $getAllCategory = CategoryModel::getAllCategory($product->category_id);
             $first_category = !empty($getAllCategory[0]) ? $getAllCategory[0] : 0;
             $second_category = !empty($getAllCategory[1]) ? $getAllCategory[1] : 0;
@@ -88,136 +86,141 @@ class ProductController extends Controller
     public function getParent(Request $request)
     {
         $getParentCategory = CategoryModel::getHomeCategory($request->parent_id);
-        if($getParentCategory->count() > 0)
-        {
+        if ($getParentCategory->count() > 0) {
             $html = '';
             $html .= '<div style="margin-bottom: 5px;">
                       <select class="form-control SubParentCategory" required  name="parent_id[]">
                           <option value="">Select</option>';
-                        foreach ($getParentCategory as $key => $value) 
-                        {
-                            $selected = '';
-                            if($request->scond_category == $value->id)
-                            {
-                                $selected = 'selected';
-                            }
-                            $html .= '<option '.$selected.' value="'.$value->id.'">'.$value->name.'</option>';
-                        }   
-                      $html .= '</select>
+            foreach ($getParentCategory as $key => $value) {
+                $selected = '';
+                if ($request->scond_category == $value->id) {
+                    $selected = 'selected';
+                }
+                $html .= '<option ' . $selected . ' value="' . $value->id . '">' . $value->name . '</option>';
+            }
+            $html .= '</select>
                    </div><div id="appendSubCategory"></div>';
 
-           $json['success'] = $html;    
+            $json['success'] = $html;
+        } else {
+            $json['success'] = 0;
         }
-        else
-        {
-          $json['success'] = 0;       
-        }
-        
-       echo json_encode($json);
+
+        echo json_encode($json);
     }
 
     public function UpdateProduct($id, Request $request)
     {
 
-        $category_id = 0;
-        if(!empty($request->parent_id))
-        {
-            if(count($request->parent_id) == 1)
-            {
-                $category_id = !empty($request->parent_id['0']) ? $request->parent_id['0'] : 0;
-            }
-            else
-            {
-                $array_filter = array_filter($request->parent_id);
+        $product = ProductModel::get_single($id);
 
-                $category_id = !empty(last($array_filter)) ? last($array_filter) : 0;
+
+        $category_id = 0;
+        if (!empty($request->parent_id)) {
+            if (count($request->parent_id) == 1) {
+                $category_id = $request->parent_id[0] ?? 0;
+            } else {
+                $array_filter = array_filter($request->parent_id);
+                $category_id = last($array_filter) ?? 0;
             }
         }
 
-        $product = ProductModel::get_single($id);
-        $product->title         = trim($request->title);
-        $product->sku           = $request->sku;
-        $product->total_product = $request->total_product;
-        $product->old_price     = $request->old_price;
-        $product->price         = $request->price;
-        $product->purchase_price       = $request->purchase_price;
-        $product->referral_price       = $request->referral_price;
-        $product->description = $request->description;
-        $product->title_description = $request->title_description;
-        if (!empty($request->file('video_file'))) {
-            
-            if (!empty($product->video_file) && file_exists('upload/' . $request->id . '/' . $product->video_file)) {
-            unlink('upload/' . $product->id . '/' . $product->video_file);
+
+        if ($request->delete_video == 1) {
+
+            $oldPath = 'upload/' . $product->id . '/' . $product->video_file;
+
+            if (!empty($product->video_file) && file_exists($oldPath)) {
+                unlink($oldPath);
             }
 
-            $file           = $request->file('video_file');
-            $randomStr      = Str::random(30);
-            $filename       = $randomStr . '.' . $file->getClientOriginalExtension();
-            $file->move('upload/' . $request->id . '/', $filename);
+            $product->video_file = null;
+        }
+
+
+        if ($request->hasFile('video_file')) {
+
+            $oldPath = 'upload/' . $product->id . '/' . $product->video_file;
+
+            if (!empty($product->video_file) && file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+
+            $file = $request->file('video_file');
+            $randomStr = Str::random(30);
+            $filename = $randomStr . '.' . $file->getClientOriginalExtension();
+            $file->move('upload/' . $product->id . '/', $filename);
+
             $product->video_file = $filename;
         }
 
-        $product->is_public   = $request->is_public;
+
+        $product->title = trim($request->title);
+        $product->sku = $request->sku;
+        $product->total_product = $request->total_product;
+        $product->old_price = $request->old_price;
+        $product->price = $request->price;
+        $product->purchase_price = $request->purchase_price;
+        $product->referral_price = $request->referral_price;
+        $product->description = $request->description;
+        $product->title_description = $request->title_description;
+
+        $product->is_public = $request->is_public;
         $product->category_id = $category_id;
-        $product->is_featured   = !empty($request->is_featured) ? 1 : 0;
-        $product->is_new_arrival   = !empty($request->is_new_arrival) ? 1 : 0;
-        $product->is_best_selling   = !empty($request->is_best_selling) ? 1 : 0;
+        $product->is_featured = !empty($request->is_featured) ? 1 : 0;
+        $product->is_new_arrival = !empty($request->is_new_arrival) ? 1 : 0;
+        $product->is_best_selling = !empty($request->is_best_selling) ? 1 : 0;
 
         $product->save();
-        if($request->type_message == 1){
-             return redirect('admin/product')->with('success', "Product Updated Successfully");
-               return redirect()->back()->with('success', "");  
-        }else{
-             return redirect('admin/product')->with('success', "Product Added Successfully");
-         
-        }
 
-        
+
+        if ($request->type_message == 1) {
+            return redirect('admin/product')->with('success', "Product Updated Successfully");
+        } else {
+            return redirect('admin/product')->with('success', "Product Added Successfully");
+        }
     }
+
 
 
     public function getSubParent(Request $request)
     {
         $getParentCategory = CategoryModel::getHomeCategory($request->parent_id);
-        if($getParentCategory->count() > 0)
-        {
+        if ($getParentCategory->count() > 0) {
             $html = '';
             $html .= '<div style="margin-bottom: 5px;">
                       <select class="form-control" required name="parent_id[]">
                           <option value="">Select</option>';
-                        foreach ($getParentCategory as $key => $value) 
-                        {                            
-                            $selected = '';
-                            if($request->last_category == $value->id)
-                            {
-                                $selected = 'selected';
-                            }
-                            $html .= '<option '.$selected.' value="'.$value->id.'">'.$value->name.'</option>';
-                        }   
-                      $html .= '</select>
+            foreach ($getParentCategory as $key => $value) {
+                $selected = '';
+                if ($request->last_category == $value->id) {
+                    $selected = 'selected';
+                }
+                $html .= '<option ' . $selected . ' value="' . $value->id . '">' . $value->name . '</option>';
+            }
+            $html .= '</select>
                    </div>';
 
-           $json['success'] = $html;
-          
-        }
-        else
-        {
-          $json['success'] = 0;       
+            $json['success'] = $html;
+
+        } else {
+            $json['success'] = 0;
         }
 
         echo json_encode($json);
     }
 
 
-    public function addcolorajax(Request $request) {
-       
+    public function addcolorajax(Request $request)
+    {
+
         $color = new ProductColorModel;
         $color->name = trim(ucwords($request->value));
         $color->product_id = trim($request->id);
         $color->color_code = trim($request->color_code);
         $color->save();
 
-  
+
         $getcolorproduct = ProductColorModel::getRecord($request->id);
 
         return response()->json([
@@ -247,7 +250,8 @@ class ProductController extends Controller
     }
 
 
-    public function deletecolor($colorid, $product_id) {
+    public function deletecolor($colorid, $product_id)
+    {
 
         $color = ProductColorModel::get_signal($colorid);
         $color->is_delete = 1;
@@ -256,16 +260,18 @@ class ProductController extends Controller
         return redirect()->back();
     }
 
-    
-    public function deletesize($size_id, $product_id) {
+
+    public function deletesize($size_id, $product_id)
+    {
         $size = ProductSizeModel::get_signal($size_id);
         $size->is_delete = 1;
         $size->save();
         return redirect()->back();
     }
 
-    public function ImageUpload(Request $request) {
-        
+    public function ImageUpload(Request $request)
+    {
+
         if (!is_dir('upload/' . $request->id)) {
             mkdir('upload/' . $request->id, 0777, true);
         }
@@ -317,7 +323,8 @@ class ProductController extends Controller
 
                 $data['initialPreview'][] = url('upload/' . $request->id . '/' . $filename);
                 $data['initialPreviewConfig'][] = [
-                    'caption' => 'upload/' . $request->id . '/', $filename,
+                    'caption' => 'upload/' . $request->id . '/',
+                    $filename,
                     'size' => (int) File::size('upload/' . $request->id . '/', $filename),
                     'url' => url('admin/product/' . $image->id . '/delete-photo'),
                     'key' => $image->id,
@@ -330,9 +337,10 @@ class ProductController extends Controller
 
     }
 
-    
+
     // delete service image
-    public function delete_photo($id) {
+    public function delete_photo($id)
+    {
         $image = ProductImageModel::find($id);
         if (!empty($image->name) && file_exists('upload/' . $image->product_id . '/' . $image->name)) {
             unlink('upload/' . $image->product_id . '/' . $image->name);
@@ -350,9 +358,9 @@ class ProductController extends Controller
         ]);
     }
 
-     public function contact_us_list(Request $request)
+    public function contact_us_list(Request $request)
     {
-         $data['getRecord'] = ContactUsModel::getRecord();
+        $data['getRecord'] = ContactUsModel::getRecord();
         return view('backend.contact_us.list', $data);
     }
 
@@ -360,7 +368,7 @@ class ProductController extends Controller
     {
         $delete = ContactUsModel::find($id);
         $delete->delete();
-        return redirect()->back()->with('error', "Delete Record Successfully"); 
+        return redirect()->back()->with('error', "Delete Record Successfully");
     }
-	
+
 }

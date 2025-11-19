@@ -46,7 +46,7 @@
                                             @if(!empty($product->getVideoFile()))
                                              <div class="swiper-slide stagger-item" data-color="gray">
                                                        <video controls style="max-width: 100%;">
-                                                          <source src="{{ $product->getVideoFile(); }}" type="video/mp4">
+                                                          <source src="{{ $product->getVideoFile() }}" type="video/mp4">
                                                        </video>
                                              </div>
                                             @endif
@@ -73,7 +73,7 @@
                                             @if(!empty($product->getVideoFile()))
                                             <div class="swiper-slide" data-color="gray">
                                                    <video controls style="max-width: 100%;">
-                                                      <source src="{{ $product->getVideoFile(); }}" type="video/mp4">
+                                                      <source src="{{ $product->getVideoFile() }}" type="video/mp4">
                                                    </video>
                                             </div>
                                             @endif
