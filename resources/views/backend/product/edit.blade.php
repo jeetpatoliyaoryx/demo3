@@ -34,6 +34,34 @@
 .remove-video:hover {
     background: #ff1a1a;
 }
+
+.size-guide-box {
+    width: 80px;
+    cursor: pointer;
+    position: relative;
+}
+
+.size-guide-checkbox {
+    position: absolute;
+    top: 0px;
+    right: -4px;
+    height: 10px;
+    width: 10px;
+    transform: scale(1.4);
+}
+.size-guide-checkbox:focus{
+    box-shadow: none;
+}
+
+.size-guide-img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+
+
 </style>
 @endsection 
 @section('content')
@@ -202,6 +230,51 @@
                                                         </div>
                                                     </div>
 
+                                                    <div class="mb-4 row align-items-center" id="sizeGuideRow">
+                                                        <label class="col-sm-2 form-label-title fw-bold">Size Guide</label>
+
+                                                        <div class="col-sm-10 d-flex align-items-center">
+                                                            <div class="form-check">
+                                                                <input type="checkbox" 
+                                                                    id="sizeGuideCheck"
+                                                                    class="form-check-input"
+                                                                    {{ !empty($selectedSizeGuides) ? 'checked' : '' }}>
+                                                                <label for="sizeGuideCheck" class="form-check-label">Enable Size Guide</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <!-- Image Selection Section -->
+                                                    <div class="mb-4 row"
+                                                        id="sizeGuideImages"
+                                                        style="display: {{ !empty($selectedSizeGuides) ? 'flex' : 'none' }};">
+
+                                                        <label class="col-sm-2 form-label-title fw-bold">Select Size Guide Images</label>
+
+                                                        <div class="col-sm-10 d-flex flex-wrap gap-4">
+                                                            @foreach($getSizeGuide as $img)
+                                                                <label class="size-guide-box text-center">
+
+                                                                    <input type="checkbox"
+                                                                        name="size_guide_ids[]"
+                                                                        value="{{ $img->id }}"
+                                                                        class="form-check-input size-guide-checkbox"
+                                                                        {{ in_array($img->id, $selectedSizeGuides) ? 'checked' : '' }}>
+
+                                                                    <img src="{{ asset('upload/size_guide/'.$img->image) }}"
+                                                                        class="img-thumbnail mt-2 size-guide-img">
+
+                                                                </label>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+
+
+
+
+
+
                                                     <div class="mb-4 row align-items-center">
                                                         <label class="form-label-title col-sm-2 mb-0">Featured</label>
                                                         <div class="col-sm-10">
@@ -330,6 +403,30 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+</script>
+
+
+<script>
+    document.getElementById('sizeGuideCheck').addEventListener('change', function() {
+    const box = document.getElementById('sizeGuideImages');
+    if (this.checked) {
+        box.style.display = 'flex';
+    } else {
+        box.style.display = 'none';
+    }
+});
+
+$('#sizeGuideCheck').on('change', function () {
+    if ($(this).is(':checked')) {
+        $('#sizeGuideImages').show();
+    } else {
+        $('#sizeGuideImages').hide();
+        $('input[name="size_guide_ids[]"]').prop('checked', false);
+    }
+});
+
+
+
 </script>
 
 

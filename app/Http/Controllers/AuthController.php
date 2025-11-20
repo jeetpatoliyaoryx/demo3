@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SEOModel;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\EmailSubscribeModel;
@@ -97,10 +98,10 @@ class AuthController extends Controller
 
     public function forgot_password()
     {
-        // $seo = SEOModel::get_slug('forgot-password');
-        // $data['meta_title'] = $seo->meta_title;
-        // $data['meta_description'] = $seo->meta_description;
-        // $data['meta_canonical'] = url('forgot-password');
+        $seo = SEOModel::get_slug('forgot-password');
+        $data['meta_title'] = $seo->meta_title;
+        $data['meta_description'] = $seo->meta_description;
+        $data['meta_canonical'] = url('forgot-password');
         
         return view('auth.forgot_password');   
     }
