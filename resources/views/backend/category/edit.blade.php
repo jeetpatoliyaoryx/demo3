@@ -74,24 +74,26 @@
 
                                                 }
                                             @endphp
-                                          <div class="mb-4 row align-items-center">
-                                            <label class="col-sm-2 col-form-label form-label-title">Parent Category</label>
-                                            <div class="col-sm-10">
+                                            <div class="mb-4 row align-items-center">
+                                                <label class="col-sm-2 col-form-label form-label-title">Parent
+                                                    Category</label>
+                                                <div class="col-sm-10">
 
-                                               <select name="parent_id[]" id="ParentCategory" class="js-example-basic-single w-100">
-                                                    <option value="">None</option>
-                                                    @foreach($getParentCategory as $value)
-                                                        <option value="{{ $value->id }}" 
-                                                            {{ ($getrecord->parent_id == $value->id) ? 'selected' : '' }}>
-                                                            {{ $value->name }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                                <div id="appendCategory"></div>
+                                                    <!-- FIRST LEVEL -->
+                                                    <select class="form-control SubParentCategory" name="parent_id[]"
+                                                        data-level="0">
+                                                        <option value="">None</option>
+                                                        @foreach($getParentCategory as $value)
+                                                            <option value="{{ $value->id }}" {{ (!empty($parentChain) && $parentChain[0] == $value->id) ? 'selected' : '' }}>
+                                                                {{ $value->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+
+                                                    <div id="appendCategory"></div>
+
+                                                </div>
                                             </div>
-                                        </div>
-
-
 
                                             <div class="mb-4 row align-items-center">
                                                 <label class="col-sm-2 col-form-label form-label-title">Status </label>
@@ -131,7 +133,7 @@
 
 @section('script')
 
-<script>
+    <script>
         document.addEventListener("DOMContentLoaded", function () {
 
             const squareInput = document.querySelector('input[name="category_image"]');
@@ -195,35 +197,72 @@
 
         });
     </script>
-<script type="text/javascript">
-   $('#ParentCategory').change(function() {
-         var parent_id = $(this).val();
-         var CSRF_TOKEN = "{{ csrf_token() }}";
-         $('#appendCategory').html('');
-         $.ajax({
-               type:'POST',
-               url:"{{url('admin/category/parent')}}",
-               data: {
-                     _token: CSRF_TOKEN,
-                     parent_id:parent_id,
-               },
-               dataType: 'JSON',
-               success:function(data) {
-                  if(data.success != 0)
-                  {
-                     $('#appendCategory').html(data.success);   
-                  }
-                  else
-                  {
-                     $('#appendCategory').html('');     
-                  }
-                  
-               }
-         });
-      });
+    <script>
+        $(document).ready(function () {
+
+            let parentChain = @json($parentChain ?? []);
+
+            function loadChildren(parent_id, level, selectedValue = null) {
+
+                $.post("{{ url('admin/category/parent') }}", {
+                    _token: "{{ csrf_token() }}",
+                    parent_id: parent_id
+                }, function (res) {
+                    // If success == 0 → No children → Do NOT append anything
+                    if (res.success == 0) return;
+
+                    $('#appendCategory').append(
+                        `<div class="child-level" data-level="${level}">
+                         ${res.success}
+                     </div>`
+                    );
+
+                    let $select = $(`.child-level[data-level="${level}"] select`)
+                        .attr("data-level", level);
+
+                    if (selectedValue) {
+                        $select.val(selectedValue);
+                    }
+
+                }, 'json');
+            }
+
+            $(document).on('change', 'select[name="parent_id[]"]', function () {
+                let level = parseInt($(this).data("level"));
+                let parent_id = $(this).val();
+
+                $('.child-level').each(function () {
+                    if (parseInt($(this).data('level')) > level) {
+                        $(this).remove();
+                    }
+                });
+
+                if (parent_id) loadChildren(parent_id, level + 1);
+            });
+
+            if (parentChain.length > 0) {
+                let i = 0;
+
+                function build() {
+                    if (i >= parentChain.length - 1) return;
+
+                    loadChildren(parentChain[i], i + 1, parentChain[i + 1]);
+
+                    i++;
+                    setTimeout(build, 300);
+                }
+
+                build();
+            }
+
+        });
+    </script>
 
 
-</script>
+
+
+
+
 
     <script>
         document.querySelector('input[name="category_banner_image"]').addEventListener('change', function (event) {
