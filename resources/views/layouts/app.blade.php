@@ -34,6 +34,8 @@
     <link rel="stylesheet" href="{{ url('frontend/css/style.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ $getHomeHeader->getFaviconLogo() }}" type="image/x-icon" sizes="52x52" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
    
      <style type="text/css">
         
@@ -855,6 +857,8 @@
     <script src="{{ url('frontend/js/main.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
 
      @yield('script')
      <script type="text/javascript">

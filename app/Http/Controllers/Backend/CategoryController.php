@@ -100,22 +100,20 @@ class CategoryController extends Controller
     {
         $data['meta_title'] = "Edit Category";
         $data['getParentCategory'] = CategoryModel::getParentCategory(0);
-        $getrecord = CategoryModel::get_single($id);
-        $data['getrecord'] = $getrecord;
+        $data['getrecord'] = CategoryModel::get_single($id);
+
+        $data['parentChain'] = CategoryModel::getParentHierarchy($id);
+
         return view('backend.category.edit', $data);
     }
 
+
     public function post_edit($id, Request $request)
     {
-        $parent_id = 0;
 
-        if (!empty($request->parent_id)) {
-            if (is_array($request->parent_id)) {
-                $parent_id = $request->parent_id[0] ?? 0;
-            } else {
-                $parent_id = $request->parent_id;
-            }
-        }
+        $array = array_filter($request->parent_id ?? []);
+        $parent_id = !empty($array) ? end($array) : 0;
+
         $category = CategoryModel::get_single($id);
         $category->name = trim($request->name);
         $category->parent_id = $parent_id;
@@ -172,25 +170,27 @@ class CategoryController extends Controller
     public function getParent(Request $request)
     {
         $getParentCategory = CategoryModel::getParentCategory($request->parent_id);
+
         if ($getParentCategory->count() > 0) {
-            $html = '';
-            $html .= '<div style="margin-bottom: 5px;">
-                      <select class="form-control SubParentCategory"  name="parent_id[]">
-                          <option value="">None</option>';
-            foreach ($getParentCategory as $key => $value) {
+
+            $html = '<div style="margin-bottom:5px;">
+                    <select class="form-control SubParentCategory" name="parent_id[]">
+                        <option value="">None</option>';
+
+            foreach ($getParentCategory as $value) {
                 $html .= '<option value="' . $value->id . '">' . $value->name . '</option>';
             }
-            $html .= '</select>
-                   </div><div id="appendSubCategory"></div>';
+
+            $html .= '</select></div>';   
 
             $json['success'] = $html;
+
         } else {
             $json['success'] = 0;
         }
 
-        echo json_encode($json);
+        return response()->json($json);
     }
-
     public function getSubParent(Request $request)
     {
         $getParentCategory = CategoryModel::getParentCategory($request->parent_id);
