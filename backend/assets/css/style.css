@@ -4660,12 +4660,23 @@ strong~p {
     transform: rotate(-45deg) scale(1, 1)
 }
 
+/* .title-header {
+    padding: calc(20px + (30 - 20) * ((100vw - 320px) / (1920 - 320))) calc(24px + (40 - 25) * ((100vw - 320px) / (1920 - 320)));
+    padding: 10px;
+    position: relative;
+    color: #262932;
+    font-size: 22px
+} */
 .title-header {
     padding: calc(20px + (30 - 20) * ((100vw - 320px) / (1920 - 320))) calc(24px + (40 - 25) * ((100vw - 320px) / (1920 - 320)));
+    /* padding: 10px; */
+    padding-top: 10px;
+    padding-bottom: 20px;
     position: relative;
     color: #262932;
     font-size: 22px
 }
+
 
 .title-header-1 {
     display: -webkit-box;
