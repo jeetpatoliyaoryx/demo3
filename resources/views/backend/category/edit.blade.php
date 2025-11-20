@@ -3,6 +3,21 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @section('style')
     <style type="text/css">
+.SubParentCategory,
+#ParentCategory {
+  -webkit-appearance: auto !important;
+  -moz-appearance: auto !important;
+  appearance: auto !important;
+  background: #ffffff !important;
+  cursor: pointer !important;
+  border: 1px solid #ced4da !important;
+  padding: 8px 10px !important;
+  border-radius: 4px !important;
+}
+
+/* wrapper style for appended selects */
+.child-level { margin-top: 8px; }
+
     </style>
 @endsection
 @section('content')
@@ -75,25 +90,27 @@
                                                 }
                                             @endphp
                                             <div class="mb-4 row align-items-center">
-                                                <label class="col-sm-2 col-form-label form-label-title">Parent
-                                                    Category</label>
-                                                <div class="col-sm-10">
+    <label class="col-sm-2 col-form-label form-label-title">Parent Category</label>
+    <div class="col-sm-10">
+        {{-- Main root-level select --}}
+        <select id="ParentCategory"
+                class="form-control SubParentCategory"
+                name="parent_id[]"
+                data-level="0">
+            <option value="">None</option>
+            @foreach($getParentCategory as $value)
+                <option value="{{ $value->id }}"
+                    {{ (!empty($parentChain) && isset($parentChain[0]) && $parentChain[0] == $value->id) ? 'selected' : '' }}>
+                    {{ $value->name }}
+                </option>
+            @endforeach
+        </select>
 
-                                                    <!-- FIRST LEVEL -->
-                                                    <select class="form-control SubParentCategory" name="parent_id[]"
-                                                        data-level="0">
-                                                        <option value="">None</option>
-                                                        @foreach($getParentCategory as $value)
-                                                            <option value="{{ $value->id }}" {{ (!empty($parentChain) && $parentChain[0] == $value->id) ? 'selected' : '' }}>
-                                                                {{ $value->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+        {{-- appended child selects will be injected here --}}
+        <div id="appendCategory"></div>
+    </div>
+</div>
 
-                                                    <div id="appendCategory"></div>
-
-                                                </div>
-                                            </div>
 
                                             <div class="mb-4 row align-items-center">
                                                 <label class="col-sm-2 col-form-label form-label-title">Status </label>
@@ -197,66 +214,98 @@
 
         });
     </script>
-    <script>
-        $(document).ready(function () {
+<script>
+$(document).ready(function () {
 
-            let parentChain = @json($parentChain ?? []);
+    // Parent chain from server (example: [154,163,181])
+    let parentChain = @json($parentChain ?? []);
 
-            function loadChildren(parent_id, level, selectedValue = null) {
+    // ------------------------------------------------------------
+    // Load children of selected category
+    // ------------------------------------------------------------
+    function loadChildren(parentId, level, selectedValue = null) {
 
-                $.post("{{ url('admin/category/parent') }}", {
-                    _token: "{{ csrf_token() }}",
-                    parent_id: parent_id
-                }, function (res) {
-                    // If success == 0 → No children → Do NOT append anything
-                    if (res.success == 0) return;
+        $.post("{{ url('admin/category/parent') }}", {
+            _token: "{{ csrf_token() }}",
+            parent_id: parentId,
+            level: level
+        }, function (res) {
 
-                    $('#appendCategory').append(
-                        `<div class="child-level" data-level="${level}">
-                         ${res.success}
-                     </div>`
-                    );
+            if (res.success == 0) return;
 
-                    let $select = $(`.child-level[data-level="${level}"] select`)
-                        .attr("data-level", level);
+            // Append dropdown for this level
+            let html = `
+                <div class="child-level" data-level="${level}" style="margin-top:5px;">
+                    ${res.success}
+                </div>
+            `;
 
-                    if (selectedValue) {
-                        $select.val(selectedValue);
-                    }
+            $("#appendCategory").append(html);
 
-                }, 'json');
+            // Get newly added dropdown
+            let $select = $(`.child-level[data-level="${level}"]`).find("select");
+
+            // Ensure it has correct level attribute
+            $select.attr("data-level", level);
+
+            // Set pre-selected value (if editing)
+            if (selectedValue) {
+                $select.val(selectedValue);
             }
 
-            $(document).on('change', 'select[name="parent_id[]"]', function () {
-                let level = parseInt($(this).data("level"));
-                let parent_id = $(this).val();
+        }, "json");
+    }
 
-                $('.child-level').each(function () {
-                    if (parseInt($(this).data('level')) > level) {
-                        $(this).remove();
-                    }
-                });
+    // ------------------------------------------------------------
+    // When user manually selects a dropdown
+    // ------------------------------------------------------------
+    $(document).on("change", 'select[name="parent_id[]"]', function () {
 
-                if (parent_id) loadChildren(parent_id, level + 1);
-            });
+        let level = parseInt($(this).data("level"));
+        let parent_id = $(this).val();
 
-            if (parentChain.length > 0) {
-                let i = 0;
-
-                function build() {
-                    if (i >= parentChain.length - 1) return;
-
-                    loadChildren(parentChain[i], i + 1, parentChain[i + 1]);
-
-                    i++;
-                    setTimeout(build, 300);
-                }
-
-                build();
+        // Remove all levels below current
+        $(".child-level").each(function () {
+            if (parseInt($(this).data("level")) > level) {
+                $(this).remove();
             }
-
         });
-    </script>
+
+        // Load next level
+        if (parent_id) {
+            loadChildren(parent_id, level + 1);
+        }
+    });
+
+    // ------------------------------------------------------------
+    // Auto-build parent chain for edit mode
+    // ------------------------------------------------------------
+    if (parentChain.length > 0) {
+
+        let i = 0;
+
+        function buildChain() {
+
+            // Stop at the last index
+            if (i >= parentChain.length - 1) return;
+
+            // Next value (if exists)
+            let nextValue = parentChain[i + 1] ?? null;
+
+            // Load next level
+            loadChildren(parentChain[i], i + 1, nextValue);
+
+            i++;
+            setTimeout(buildChain, 200);
+        }
+
+        buildChain();
+    }
+
+});
+</script>
+
+
 
 
 

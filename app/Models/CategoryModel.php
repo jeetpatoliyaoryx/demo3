@@ -284,19 +284,26 @@ class CategoryModel extends Model
         return $url;
     }
 
+
     public static function getParentHierarchy($id)
     {
         $chain = [];
+
         while ($id) {
-            $cat = self::find($id);
+            $cat = self::select('id', 'parent_id')->find($id);
             if (!$cat)
                 break;
+
             $chain[] = $cat->id;
-            $id = $cat->parent_id;
+            $id = $cat->parent_id; 
         }
+
         return array_reverse($chain);
     }
-    
+
+
+
+
 
 
 

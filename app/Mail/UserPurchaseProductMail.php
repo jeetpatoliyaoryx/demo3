@@ -6,17 +6,19 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class UserPurchaseProductMail extends Mailable {
+class UserPurchaseProductMail extends Mailable
+{
 	use Queueable, SerializesModels;
 	public $user;
-	public $total_usd;
+    public $total;
 
 	/**
 	 * Create a new message instance.
 	 *
 	 * @return void
 	 */
-	public function __construct($user,$total) {
+	public function __construct($user, $total)
+	{
 		$this->user = $user;
 		$this->total = $total;
 	}
@@ -26,7 +28,14 @@ class UserPurchaseProductMail extends Mailable {
 	 *
 	 * @return $this
 	 */
-	public function build() {
-		return $this->markdown('emails.user_purchase_product')->subject(config('app.name') . ', Purchase Product Email');
+	public function build()
+	{
+		return $this->subject('Order Confirmation')
+			->view('emails.user_purchase_product')
+			->with([
+				'user' => $this->user,
+				'total' => $this->total,
+			]);
 	}
+
 }

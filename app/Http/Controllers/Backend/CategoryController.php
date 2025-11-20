@@ -108,6 +108,7 @@ class CategoryController extends Controller
     }
 
 
+
     public function post_edit($id, Request $request)
     {
 
@@ -169,50 +170,31 @@ class CategoryController extends Controller
 
     public function getParent(Request $request)
     {
-        $getParentCategory = CategoryModel::getParentCategory($request->parent_id);
+        $categories = CategoryModel::getParentCategory($request->parent_id);
 
-        if ($getParentCategory->count() > 0) {
-
-            $html = '<div style="margin-bottom:5px;">
-                    <select class="form-control SubParentCategory" name="parent_id[]">
-                        <option value="">None</option>';
-
-            foreach ($getParentCategory as $value) {
-                $html .= '<option value="' . $value->id . '">' . $value->name . '</option>';
-            }
-
-            $html .= '</select></div>';   
-
-            $json['success'] = $html;
-
-        } else {
-            $json['success'] = 0;
+        if ($categories->count() == 0) {
+            return response()->json(['success' => 0]);
         }
 
-        return response()->json($json);
-    }
-    public function getSubParent(Request $request)
-    {
-        $getParentCategory = CategoryModel::getParentCategory($request->parent_id);
-        if ($getParentCategory->count() > 0) {
-            $html = '';
-            $html .= '<div style="margin-bottom: 5px;">
-                      <select class="form-control"  name="parent_id[]">
-                          <option value="">None</option>';
-            foreach ($getParentCategory as $key => $value) {
-                $html .= '<option value="' . $value->id . '">' . $value->name . '</option>';
-            }
-            $html .= '</select>
-                   </div>';
+        $html = '<div class="sub-parent-box" style="margin-bottom:5px;">';
+        $html .= '<select class="form-control SubParentCategory" name="parent_id[]" data-level="' . $request->level . '">';
+        $html .= '<option value="">None</option>';
 
-            $json['success'] = $html;
-
-        } else {
-            $json['success'] = 0;
+        foreach ($categories as $cat) {
+            $html .= '<option value="' . $cat->id . '">' . $cat->name . '</option>';
         }
 
-        echo json_encode($json);
+        $html .= '</select>';
+        $html .= '</div>';
+
+        return response()->json(['success' => $html]);
     }
+
+
+ public function getSubParent(Request $request)
+{
+    return $this->getParent($request);
+}
 
 
 }
