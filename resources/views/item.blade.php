@@ -160,9 +160,14 @@
                                                         {{ $product->getsize->first()->name }}
                                                     </span>
                                                 </div>
+                                               @if($hasSizeGuide)
                                                 <div class="size-guide">
-                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#sizeGuideModal">Size Guide</a>
+                                                    <a href="#" data-bs-toggle="modal" data-bs-target="#sizeGuideModal">
+                                                        Size Guide
+                                                    </a>
                                                 </div>
+                                                @endif
+
 
                                             </div>
 
@@ -484,7 +489,44 @@
 </div>
 
         <!-- 3-9-2025 changes End -->
+<!-- Size Guide Modal -->
+@if($hasSizeGuide)
+<div class="modal fade" id="sizeGuideModal" tabindex="-1" aria-labelledby="sizeGuideLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-dark text-white">
 
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="sizeGuideLabel">Size Guide</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="swiper sizeGuideSwiper">
+          <div class="swiper-wrapper">
+
+            @foreach($sizeGuideImages as $img)
+            <div class="swiper-slide">
+              <img src="{{ asset('upload/size_guide/' . $img->image) }}"
+                   class="img-fluid rounded" alt="Size Guide">
+            </div>
+            @endforeach
+
+          </div>
+
+          <!-- Pagination -->
+          <div class="swiper-pagination"></div>
+
+          <!-- Navigation -->
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+@endif
 @endsection
 @section('script')
 <script src="{{ url('frontend/js/fancybox.umd.js') }}"></script>

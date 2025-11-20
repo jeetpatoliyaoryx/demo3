@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SizeGuideModel;
 use Illuminate\Http\Request;
 use App\Models\ProductModel;
 use App\Models\CategoryModel;
@@ -26,7 +27,9 @@ class IndexController extends Controller
     public function search(Request $request)
     {
         $products = ProductModel::with(['getsize', 'getcolor'])
-            ->when($request->title, fn($q) => 
+            ->when(
+                $request->title,
+                fn($q) =>
                 $q->where('title', 'LIKE', '%' . $request->title . '%')
             )
             ->where('product.is_public', '=', 0)
@@ -94,53 +97,47 @@ class IndexController extends Controller
         return view('product', $data);
     }
 
-    public function getCategory_old($cat1 = '',$cat2 = '', $cat3 = '', Request $request)
+    public function getCategory_old($cat1 = '', $cat2 = '', $cat3 = '', Request $request)
     {
-        if(!empty($cat1))
-        {
+        if (!empty($cat1)) {
             $categoryslug = '';
             $category = array();
-            if(!empty($cat3))
-            {
+            if (!empty($cat3)) {
 
 
                 $data['active'] = 3;
-                $data['backurl'] = url('c/'.$cat1.'/'.$cat2);
+                $data['backurl'] = url('c/' . $cat1 . '/' . $cat2);
                 $categoryslug = $cat3;
                 $category = CategoryModel::getCategoryID($cat3);
 
                 $SlugCategory = CategoryModel::getSlug($cat3);
-                $data['meta_title'] = 'Buy '.$SlugCategory->name.' | Latest Designer '.$SlugCategory->name.' Shopping';
-                $data['meta_description'] = 'Buy '.$SlugCategory->name.' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women '.$SlugCategory->name.' from our vast range in low prices.';
+                $data['meta_title'] = 'Buy ' . $SlugCategory->name . ' | Latest Designer ' . $SlugCategory->name . ' Shopping';
+                $data['meta_description'] = 'Buy ' . $SlugCategory->name . ' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women ' . $SlugCategory->name . ' from our vast range in low prices.';
                 $data['getCategoryFilter'] = CategoryModel::getCategoryLastFilter($cat1, $cat2, $cat3);
-            }
-            elseif(!empty($cat2))
-            {
+            } elseif (!empty($cat2)) {
 
                 $data['active'] = 2;
-                $data['backurl'] = url('c/'.$cat1);
+                $data['backurl'] = url('c/' . $cat1);
                 $categoryslug = $cat2;
                 $category = CategoryModel::getCategoryID($cat2);
 
                 $SlugCategory = CategoryModel::getSlug($cat2);
-                $data['meta_title'] = 'Buy '.$SlugCategory->name.' | Latest Designer '.$SlugCategory->name.' Shopping';
-                $data['meta_description'] = 'Buy '.$SlugCategory->name.' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women '.$SlugCategory->name.' from our vast range in low prices.';
+                $data['meta_title'] = 'Buy ' . $SlugCategory->name . ' | Latest Designer ' . $SlugCategory->name . ' Shopping';
+                $data['meta_description'] = 'Buy ' . $SlugCategory->name . ' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women ' . $SlugCategory->name . ' from our vast range in low prices.';
                 $data['getCategoryFilter'] = CategoryModel::getCategorySecondFilter($cat1, $cat2);
-            }
-            elseif(!empty($cat1))
-            {
-               
+            } elseif (!empty($cat1)) {
+
                 $data['active'] = 1;
-                $data['backurl'] = url('c/'.$cat1);
+                $data['backurl'] = url('c/' . $cat1);
                 $categoryslug = $cat1;
                 $category = CategoryModel::getCategoryID($cat1);
 
                 $SlugCategory = CategoryModel::getSlug($cat1);
-                $data['meta_title'] = 'Buy '.$SlugCategory->name.' | Latest Designer '.$SlugCategory->name.' Shopping';
-                $data['meta_description'] = 'Buy '.$SlugCategory->name.' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women '.$SlugCategory->name.' from our vast range in low prices.';
+                $data['meta_title'] = 'Buy ' . $SlugCategory->name . ' | Latest Designer ' . $SlugCategory->name . ' Shopping';
+                $data['meta_description'] = 'Buy ' . $SlugCategory->name . ' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women ' . $SlugCategory->name . ' from our vast range in low prices.';
                 $data['getCategoryFilter'] = CategoryModel::getCategoryFirstFilter($cat1);
             }
-            
+
             $getCategoryArrayHead = array($cat1, $cat2, $cat3);
             $data['getCategoryHeader'] = CategoryModel::getSlugCategory($getCategoryArrayHead);
 
@@ -148,46 +145,40 @@ class IndexController extends Controller
 
             $data['getCategory'] = CategoryModel::getSlug($categoryslug);
             $data['categoryslug'] = $categoryslug;
-            return view('product', $data);    
-        }
-        else
-        {
+            return view('product', $data);
+        } else {
             abort(404);
-        }    
+        }
     }
 
-    public function getACategory($cat1 = '',$cat2 = '', Request $request)
+    public function getACategory($cat1 = '', $cat2 = '', Request $request)
     {
 
-        if(!empty($cat1))
-        {
+        if (!empty($cat1)) {
             $categoryslug = '';
             $category = array();
-            if(!empty($cat2))
-            {
+            if (!empty($cat2)) {
                 $data['active'] = 2;
-                $data['backurl'] = url('m/'.$cat1);
+                $data['backurl'] = url('m/' . $cat1);
                 $categoryslug = $cat2;
                 $category = CategoryModel::getCategoryID($cat2);
 
                 $SlugCategory = CategoryModel::getSlug($cat2);
-                $data['meta_title'] = 'Buy '.$SlugCategory->name.' | Latest Designer '.$SlugCategory->name.' Shopping';
-                $data['meta_description'] = 'Buy '.$SlugCategory->name.' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women '.$SlugCategory->name.' from our vast range in low prices.';
+                $data['meta_title'] = 'Buy ' . $SlugCategory->name . ' | Latest Designer ' . $SlugCategory->name . ' Shopping';
+                $data['meta_description'] = 'Buy ' . $SlugCategory->name . ' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women ' . $SlugCategory->name . ' from our vast range in low prices.';
                 $data['getCategoryFilter'] = CategoryModel::getCategorySecondFilter($cat1, $cat2);
-            }
-            elseif(!empty($cat1))
-            {
+            } elseif (!empty($cat1)) {
                 $data['active'] = 1;
-                $data['backurl'] = url('m/'.$cat1);
+                $data['backurl'] = url('m/' . $cat1);
                 $categoryslug = $cat1;
                 $category = CategoryModel::getCategoryID($cat1);
 
                 $SlugCategory = CategoryModel::getSlug($cat1);
-                $data['meta_title'] = 'Buy '.$SlugCategory->name.' | Latest Designer '.$SlugCategory->name.' Shopping';
-                $data['meta_description'] = 'Buy '.$SlugCategory->name.' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women '.$SlugCategory->name.' from our vast range in low prices.';
+                $data['meta_title'] = 'Buy ' . $SlugCategory->name . ' | Latest Designer ' . $SlugCategory->name . ' Shopping';
+                $data['meta_description'] = 'Buy ' . $SlugCategory->name . ' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women ' . $SlugCategory->name . ' from our vast range in low prices.';
                 $data['getCategoryFilter'] = CategoryModel::getCategoryFirstFilter($cat1);
             }
-            
+
             $getCategoryArrayHead = array($cat1, $cat2);
             $data['getCategoryHeader'] = CategoryModel::getSlugCategory($getCategoryArrayHead);
 
@@ -195,34 +186,30 @@ class IndexController extends Controller
 
             $data['getCategory'] = CategoryModel::getSlug($categoryslug);
             $data['categoryslug'] = $categoryslug;
-            return view('product', $data);    
-        }
-        else
-        {
+            return view('product', $data);
+        } else {
             abort(404);
-        }    
+        }
     }
 
     public function getMCategory($cat1 = '', Request $request)
     {
-        if(!empty($cat1))
-        {
+        if (!empty($cat1)) {
             $categoryslug = '';
             $category = array();
-            
-            if(!empty($cat1))
-            {
+
+            if (!empty($cat1)) {
                 $data['active'] = 1;
-                $data['backurl'] = url('m/'.$cat1);
+                $data['backurl'] = url('m/' . $cat1);
                 $categoryslug = $cat1;
                 $category = CategoryModel::getCategoryID($cat1);
 
                 $SlugCategory = CategoryModel::getSlug($cat1);
-                $data['meta_title'] = 'Buy '.$SlugCategory->name.' | Latest Designer '.$SlugCategory->name.' Shopping';
-                $data['meta_description'] = 'Buy '.$SlugCategory->name.' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women '.$SlugCategory->name.' from our vast range in low prices.';
+                $data['meta_title'] = 'Buy ' . $SlugCategory->name . ' | Latest Designer ' . $SlugCategory->name . ' Shopping';
+                $data['meta_description'] = 'Buy ' . $SlugCategory->name . ' online. Buy Designer Saree, Dresses & Kurtis, Suits & Dress Material, Top Wear, and Lehengas at Desirt. Online shopping for women ' . $SlugCategory->name . ' from our vast range in low prices.';
                 $data['getCategoryFilter'] = CategoryModel::getCategoryFirstFilter($cat1);
             }
-            
+
             $getCategoryArrayHead = array($cat1);
             $data['getCategoryHeader'] = CategoryModel::getSlugCategory($getCategoryArrayHead);
 
@@ -230,33 +217,39 @@ class IndexController extends Controller
 
             $data['getCategory'] = CategoryModel::getSlug($categoryslug);
             $data['categoryslug'] = $categoryslug;
-            return view('product', $data);    
-        }
-        else
-        {
+            return view('product', $data);
+        } else {
             abort(404);
-        }  
+        }
     }
 
     public function item($slug, Request $request)
     {
-        
         $product = ProductModel::getSlug($slug);
-        if(!empty($product))
-        {
+
+        if (!empty($product)) {
+
+            $sizeGuideIds = [];
+            if (!empty($product->size_guide_id)) {
+                $sizeGuideIds = explode(',', $product->size_guide_id);
+            }
+
+            $data['sizeGuideImages'] = SizeGuideModel::whereIn('id', $sizeGuideIds)->get();
+            $data['hasSizeGuide'] = count($sizeGuideIds) > 0;
+
             $data['getCategory'] = CategoryModel::getCategoryParent($product->category_id);
             $data['product'] = $product;
 
-            $data['meta_title']       = $product->title;
-            $data['meta_canonical']   = url($product->slug);
+            $data['meta_title'] = $product->title;
+            $data['meta_canonical'] = url($product->slug);
             $data['getAssurance'] = AssuranceModel::get();
-            return view('item', $data);    
+
+            return view('item', $data);
         }
-        else        
-        {
-            abort(404);
-        }
+
+        abort(404);
     }
+
 
 
     public function contact()
@@ -266,7 +259,7 @@ class IndexController extends Controller
         // $data['meta_description'] = $seo->meta_description;
         // $data['meta_canonical'] = url('contact');
         $data['meta_title'] = "Contact";
-         $data['getRecord'] = ContactSettingModel::first();
+        $data['getRecord'] = ContactSettingModel::first();
         return view('page.contact', $data);
     }
 
@@ -334,41 +327,35 @@ class IndexController extends Controller
         return view('page.about', $data);
     }
 
-       public function email_subscribe(Request $request)
+    public function email_subscribe(Request $request)
     {
-        if(!filter_var($request->email, FILTER_VALIDATE_EMAIL))
-        {
+        if (!filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
             $json['status'] = false;
             $json['message'] = "Email address not currect.";
-        }
-        else
-        {
+        } else {
             $count = EmailSubscribeModel::where('email', '=', $request->email)->count();
-            if(empty($count))
-            {
+            if (empty($count)) {
                 $user = request()->validate([
-                    'email'             => 'required|unique:email_subscribe,email',
+                    'email' => 'required|unique:email_subscribe,email',
                 ]);
 
-   
-                $user        = new EmailSubscribeModel;
-               
+
+                $user = new EmailSubscribeModel;
+
                 $user->email = trim($request->email);
 
                 $user->save();
 
                 $json['status'] = true;
                 $json['message'] = "Email Successfully Subscribed.";
-            }
-            else
-            {
+            } else {
                 $json['status'] = false;
                 $json['message'] = "Your email address already exist.";
-            }         
+            }
         }
 
         echo json_encode($json);
-        
+
     }
 
 }

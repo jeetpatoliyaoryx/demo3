@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\SizeGuideModel;
 use Illuminate\Http\Request;
 use App\Models\ProductModel;
 use App\Models\CategoryModel;
@@ -80,6 +81,13 @@ class ProductController extends Controller
         $data['scond_category'] = $second_category;
         $data['last_category'] = $last_category;
         $data['meta_title'] = "Product";
+        $data['getSizeGuide'] = SizeGuideModel::get();
+
+        $data['selectedSizeGuides'] = [];
+        if (!empty($product->size_guide_id)) {
+            $data['selectedSizeGuides'] = explode(',', $product->size_guide_id);
+        }
+
         return view('backend.product.edit', $data);
     }
 
@@ -111,9 +119,7 @@ class ProductController extends Controller
 
     public function UpdateProduct($id, Request $request)
     {
-
         $product = ProductModel::get_single($id);
-
 
         $category_id = 0;
         if (!empty($request->parent_id)) {
@@ -125,9 +131,7 @@ class ProductController extends Controller
             }
         }
 
-
         if ($request->delete_video == 1) {
-
             $oldPath = 'upload/' . $product->id . '/' . $product->video_file;
 
             if (!empty($product->video_file) && file_exists($oldPath)) {
@@ -137,9 +141,7 @@ class ProductController extends Controller
             $product->video_file = null;
         }
 
-
         if ($request->hasFile('video_file')) {
-
             $oldPath = 'upload/' . $product->id . '/' . $product->video_file;
 
             if (!empty($product->video_file) && file_exists($oldPath)) {
@@ -153,7 +155,6 @@ class ProductController extends Controller
 
             $product->video_file = $filename;
         }
-
 
         $product->title = trim($request->title);
         $product->sku = $request->sku;
@@ -171,6 +172,14 @@ class ProductController extends Controller
         $product->is_new_arrival = !empty($request->is_new_arrival) ? 1 : 0;
         $product->is_best_selling = !empty($request->is_best_selling) ? 1 : 0;
 
+
+        if (!empty($request->size_guide_ids)) {
+            $product->size_guide_id = implode(',', $request->size_guide_ids);
+        } else {
+            $product->size_guide_id = null;
+        }
+
+
         $product->save();
 
 
@@ -180,6 +189,7 @@ class ProductController extends Controller
             return redirect('admin/product')->with('success', "Product Added Successfully");
         }
     }
+
 
 
 

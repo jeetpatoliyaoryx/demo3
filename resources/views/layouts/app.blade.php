@@ -546,45 +546,8 @@
 
 {{-- Size Guide Modal Start --}}
 
-<!-- Size Guide Modal -->
-<div class="modal fade" id="sizeGuideModal" tabindex="-1" aria-labelledby="sizeGuideLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content bg-dark text-white">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="sizeGuideLabel">Size Guide</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
 
-      <div class="modal-body">
-        <!-- Swiper Slider -->
-        <div class="swiper sizeGuideSwiper">
-          <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img src="{{ url('frontend/images/size-chart/size-1.jpg') }}" class="img-fluid rounded" alt="Size Guide 1">
-            </div>
-            <div class="swiper-slide">
-              <img src="{{ url('frontend/images/size-chart/size-2.jpg') }}" class="img-fluid rounded" alt="Size Guide 2">
-            </div>
-            <div class="swiper-slide">
-              <img src="{{ url('frontend/images/size-chart/size-3.webp') }}" class="img-fluid rounded" alt="Size Guide 3">
-            </div>
-          </div>
 
-          <!-- Pagination Dots -->
-          <div class="swiper-pagination"></div>
-
-          <!-- Navigation Arrows -->
-          <div class="swiper-button-prev"></div>
-          <div class="swiper-button-next"></div>
-        </div>
-      </div>
-
-      <!-- <div class="modal-footer border-0 justify-content-center">
-        <button type="button" class="btn-style-2 w-100" data-bs-dismiss="modal">Close</button>
-      </div> -->
-    </div>
-  </div>
-</div>
 
 
 

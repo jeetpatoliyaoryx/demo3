@@ -162,6 +162,12 @@
                                                 <span>Subscribe</span>
                                             </a>
                                         </li>
+                                          <li>
+                                            <a href="{{ url('admin/size_guide') }}" 
+                                                class="@if(Request::segment(2) == 'size_guide') @endif">
+                                                <i data-feather="align-left"></i> Size Guide
+                                            </a>
+                                        </li>
                                         
 
 
