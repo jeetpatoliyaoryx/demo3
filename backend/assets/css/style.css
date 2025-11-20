@@ -40712,7 +40712,7 @@ body[class*="dark-"] .for-light {
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
-    padding: 22px 30px;
+    padding: 10px 30px;
     position: relative
 }
 
@@ -42280,7 +42280,7 @@ body[class*="dark-"] .for-light {
 
 .page-wrapper.compact-wrapper .page-body-wrapper .page-body {
     min-height: calc(100vh - 80px);
-    margin-top: 105px;
+    /* margin-top: 105px; */
     margin-left: 280px
 }
 
@@ -47307,6 +47307,9 @@ html[dir="rtl"] .grow svg {
 }
 
 @media only screen and (max-width: 991.98px) {
+        .title-header{
+        padding-top: 0;
+    }
     html[dir="rtl"] .order-menu-section {
         padding: 0
     }
@@ -49125,4 +49128,8 @@ html[dir="rtl"] .grow svg {
         height: 100%;
 
     }
+}
+
+.simplebar-offset{
+    top: 0;
 }
