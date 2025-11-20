@@ -91,15 +91,15 @@
                                     <form id="bulkShiprocketForm" action="{{ route('admin.orders.ship.bulk') }}" method="POST">
                                         @csrf
 
-                                        <button type="submit" 
+                                        <!-- <button type="submit" 
                                                 class="btn btn-danger my-3" 
                                                 id="bulkCreateButton"
                                                 onclick="return confirm('Create Shiprocket orders for selected items?');">
                                             Ship Bulk Orders
-                                        </button>
+                                        </button> -->
 
 
-                                        <ul class="nav nav-tabs mb-3" id="staticOrderTabs" role="tablist">
+                                        <ul class="nav nav-tabs my-3" id="staticOrderTabs" role="tablist">
                                             <li class="nav-item">
                                                 <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#newOrdersTab" type="button">New Orders</button>
                                             </li>
@@ -126,6 +126,12 @@
 
                                         <div class="tab-content">
                                             <div class="tab-pane fade show active" id="newOrdersTab">
+                                                <button type="submit" 
+                                                        class="btn btn-danger mb-3" 
+                                                        id="bulkCreateButton"
+                                                        onclick="return confirm('Create Shiprocket orders for selected items?');">
+                                                    Ship Bulk Orders
+                                                </button>
                                                 <div class="order-table">
                                                     <div class="table-responsive table-desi">
                                                         <table class="user-table table table-striped">
@@ -266,6 +272,12 @@
                                                 </div>
                                             </div>
                                             <div class="tab-pane fade" id="readytoship">
+                                                <button type="submit" 
+                                                        class="btn btn-danger mb-3" 
+                                                        id="bulkCreateButton"
+                                                        onclick="return confirm('Create Shiprocket orders for selected items?');">
+                                                    Download Bulk Invoice
+                                                </button>
                                                 <div class="order-table">
                                                     <div class="table-responsive table-desi">
                                                         <table class="user-table table table-striped">
@@ -292,7 +304,7 @@
 
                                                                     <th> <input type="checkbox" class="select-all-checkbox" id="select-all"> <span></span></th>
                                                                     <th>ID</th>
-                                                                    <th>Ship Order</th>
+                                                                    <th>Download Invoice</th>
                                                                     <th>Order Status</th>
                                                                     <th>Payment Status</th>
                                                                     <th>Payment Method</th>
@@ -324,7 +336,7 @@
 
                                                                         <form action="{{ url('admin/orders/'.$value->id.'/ship') }}" method="POST" style="display:inline">
                                                                             @csrf
-                                                                            <button class="btn btn-sm btn-primary" type="submit">Ship Order</button>
+                                                                            <button class="btn btn-sm btn-primary" type="submit">Download Invoice</button>
                                                                         </form>
 
                                                                     {{--     <form action="{{ url('admin/orders/'.$value->id.'/assign-awb') }}" method="POST" style="display:inline">
