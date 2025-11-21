@@ -8,34 +8,23 @@ use Illuminate\Queue\SerializesModels;
 
 class UserPurchaseProductMail extends Mailable
 {
-	use Queueable, SerializesModels;
-	public $user;
-    public $total;
+    use Queueable, SerializesModels;
 
-	/**
-	 * Create a new message instance.
-	 *
-	 * @return void
-	 */
-	public function __construct($user, $total)
-	{
-		$this->user = $user;
-		$this->total = $total;
-	}
+    public $order;
 
-	/**
-	 * Build the message.
-	 *
-	 * @return $this
-	 */
-	public function build()
-	{
-		return $this->subject('Order Confirmation')
-			->view('emails.user_purchase_product')
-			->with([
-				'user' => $this->user,
-				'total' => $this->total,
-			]);
-	}
+    public function __construct($order)
+    {
+        $this->order = $order; // order already contains everything
+    }
 
+    public function build()
+    {
+        return $this->subject('Order Confirmation - #' . $this->order->id)
+            ->view('emails.user_purchase_product')
+            ->with([
+                'order' => $this->order,
+                'items' => $this->order->items,
+                'total' => $this->order->total, 
+            ]);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CancellationPolicyModel;
 use App\Models\SizeGuideModel;
 use Illuminate\Http\Request;
 use App\Models\ProductModel;
@@ -301,6 +302,12 @@ class IndexController extends Controller
         $data['getRecord'] = ShippingPolicyModel::get();
         $data['meta_title'] = "Shipping Refund";
         return view('page.shipping_refund', $data);
+    }
+    public function cancellation_policy()
+    {
+        $data['getRecord'] = CancellationPolicyModel::get();
+        $data['meta_title'] = "Cancellation Policy";
+        return view('page.cancellation_policy', $data);
     }
 
     public function return_policy()

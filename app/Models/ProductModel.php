@@ -23,7 +23,7 @@ class ProductModel extends Model
 
     static public function getSlug($slug)
     {
-        return self::where('slug','=',$slug)->first();
+        return self::where('slug', '=', $slug)->first();
     }
 
 
@@ -55,35 +55,32 @@ class ProductModel extends Model
     {
 
         $return = self::select('product.*');
-                if(!empty(Request::get('id')))
-                {
-                    $return = $return->where('product.id', '=', Request::get('id'));
-                }
+        if (!empty(Request::get('id'))) {
+            $return = $return->where('product.id', '=', Request::get('id'));
+        }
 
-                if(!empty(Request::get('title')))
-                {
-                    $return = $return->where('product.title','like','%'.Request::get('title').'%');
-                }
+        if (!empty(Request::get('title'))) {
+            $return = $return->where('product.title', 'like', '%' . Request::get('title') . '%');
+        }
 
-                if(!empty(Request::get('sku')))
-                {
-                    $return = $return->where('product.sku','like','%'.Request::get('sku').'%');
-                }
+        if (!empty(Request::get('sku'))) {
+            $return = $return->where('product.sku', 'like', '%' . Request::get('sku') . '%');
+        }
 
-                if(!empty(Request::get('is_public'))){
-                    $status = Request::get('is_public');
-                    if (Request::get('is_public') == '1000') {
-                        $status = '0';
-                    }
-                    $return = $return->where('product.is_public', '=', $status);
-                }
-               
-                $return = $return->orderBy('product.id', 'desc')
-                ->paginate(50);
+        if (!empty(Request::get('is_public'))) {
+            $status = Request::get('is_public');
+            if (Request::get('is_public') == '1000') {
+                $status = '0';
+            }
+            $return = $return->where('product.is_public', '=', $status);
+        }
+
+        $return = $return->orderBy('product.id', 'desc')
+            ->paginate(50);
 
         return $return;
 
-       // return self::orderBy('id','desc')->paginate(25);
+        // return self::orderBy('id','desc')->paginate(25);
     }
 
     static public function getHomeFeatured($request)
@@ -97,15 +94,15 @@ class ProductModel extends Model
         }
 
         return self::where('is_public', '=', 0)
-                ->where('is_delete', '=', 0)
-                ->where('is_featured', '=', 1)
-                ->orderBy(DB::raw('RAND("' . $seed . '")'))
-                ->groupBy('product.id')
-                ->paginate(40);   
+            ->where('is_delete', '=', 0)
+            ->where('is_featured', '=', 1)
+            ->orderBy(DB::raw('RAND("' . $seed . '")'))
+            ->groupBy('product.id')
+            ->paginate(40);
     }
 
     static public function getFrontProduct_old($request, $category)
-    {   
+    {
         if (\Session::has('rand.key')) {
             $seed = \Session::get('rand.key');
         } else {
@@ -115,45 +112,36 @@ class ProductModel extends Model
 
 
         $return = self::select('product.*')
-                ->join('category','category.id','=','product.category_id')
-                ->where('product.is_public', '=', 0)
-                ->where('product.is_delete', '=', 0);
-                if(!empty($category))
-                {
-                    $return = $return->whereIn('category.id', $category);
-                }
+            ->join('category', 'category.id', '=', 'product.category_id')
+            ->where('product.is_public', '=', 0)
+            ->where('product.is_delete', '=', 0);
+        if (!empty($category)) {
+            $return = $return->whereIn('category.id', $category);
+        }
 
-                if(!empty(Request::get('sort')))
-                {
-                    $sort = Request::get('sort');
-                    if($sort == 'most_recent')
-                    {
-                        $return = $return->orderBy('product.id','desc');   
-                    }
-                    else if($sort == 'lowest_price')
-                    {
-                        $return = $return->orderBy('product.price','asc');   
-                    }
-                    else if($sort == 'highest_price')
-                    {
-                        $return = $return->orderBy('product.price','desc');              
-                    }
-                }
-                else
-                {
-                    $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
-                }
-                $return = $return->groupBy('product.id');
-                $return = $return->paginate(40);   
+        if (!empty(Request::get('sort'))) {
+            $sort = Request::get('sort');
+            if ($sort == 'most_recent') {
+                $return = $return->orderBy('product.id', 'desc');
+            } else if ($sort == 'lowest_price') {
+                $return = $return->orderBy('product.price', 'asc');
+            } else if ($sort == 'highest_price') {
+                $return = $return->orderBy('product.price', 'desc');
+            }
+        } else {
+            $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
+        }
+        $return = $return->groupBy('product.id');
+        $return = $return->paginate(40);
         return $return;
     }
 
     static public function ProductCatalogue()
     {
-         $return = self::select('product.*')
-                ->where('product.is_public', '=', 0)
-                ->where('product.is_delete', '=', 0);
-                $return = $return->get();   
+        $return = self::select('product.*')
+            ->where('product.is_public', '=', 0)
+            ->where('product.is_delete', '=', 0);
+        $return = $return->get();
         return $return;
     }
 
@@ -164,73 +152,65 @@ class ProductModel extends Model
         \Session::put('rand.key', $seed);
 
         $query = self::select('product.*')
-                     ->join('category','category.id','=','product.category_id')
-                     ->where('product.is_public', 0)
-                     ->where('product.is_delete', 0);
+            ->join('category', 'category.id', '=', 'product.category_id')
+            ->where('product.is_public', 0)
+            ->where('product.is_delete', 0);
 
         // Category filter
         $filterSlugs = $request->input('category', []);
-        
 
-        if(!empty($filterSlugs)) {
+
+        if (!empty($filterSlugs)) {
             $categoryIds = CategoryModel::whereIn('slug', $filterSlugs)->pluck('id')->toArray();
-            if(!empty($categoryIds)) 
-            {
+            if (!empty($categoryIds)) {
                 $allids = array();
-                foreach($categoryIds as $cat_id)
-                {
+                foreach ($categoryIds as $cat_id) {
                     $categoryAllIds = CategoryModel::getParentCategory($cat_id);
-                    foreach($categoryAllIds as $sub_cat_id)
-                    {
+                    foreach ($categoryAllIds as $sub_cat_id) {
                         $allids[] = $sub_cat_id->id;
                     }
                 }
 
-                if(!empty($allids))
-                {
-                    $query->whereIn('product.category_id', $allids);    
-                }
-                else
-                {
-                    $query->whereIn('product.category_id', $categoryIds);    
+                if (!empty($allids)) {
+                    $query->whereIn('product.category_id', $allids);
+                } else {
+                    $query->whereIn('product.category_id', $categoryIds);
                 }
             }
-        } 
-        else if(!empty($category)) 
-        {
+        } else if (!empty($category)) {
             $query->whereIn('product.category_id', $category);
         }
 
         // Price filter
-      
+
         $priceMin = $request->input('price_min');
         $priceMax = $request->input('price_max');
 
         if ($priceMin !== null && $priceMax !== null) {
-            $query->whereBetween('product.price', [(float)$priceMin, (float)$priceMax]);
+            $query->whereBetween('product.price', [(float) $priceMin, (float) $priceMax]);
         }
 
-         $size = $request->input('size');
+        $size = $request->input('size');
         if (!empty($size)) {
             $query->join('product_size', 'product_size.product_id', '=', 'product.id')
-                  ->where('product_size.name', $size);
+                ->where('product_size.name', $size);
         }
 
         $color = $request->input('color');
         if (!empty($color)) {
             $query->join('product_color', 'product_color.product_id', '=', 'product.id')
-                  ->where('product_color.name', $color);
+                ->where('product_color.name', $color);
         }
 
 
         // Sorting
         $sort = $request->get('sort');
-        if($sort == 'most_recent') {
-            $query->orderBy('product.id','desc');   
-        } elseif($sort == 'lowest_price') {
-            $query->orderBy('product.price','asc');   
-        } elseif($sort == 'highest_price') {
-            $query->orderBy('product.price','desc');              
+        if ($sort == 'most_recent') {
+            $query->orderBy('product.id', 'desc');
+        } elseif ($sort == 'lowest_price') {
+            $query->orderBy('product.price', 'asc');
+        } elseif ($sort == 'highest_price') {
+            $query->orderBy('product.price', 'desc');
         } else {
             $query->orderBy(DB::raw('RAND("' . $seed . '")'));
         }
@@ -239,7 +219,7 @@ class ProductModel extends Model
         return $query->paginate(40);
     }
 
-// In ProductModel.php
+    // In ProductModel.php
     public function sizes()
     {
         return $this->hasMany(ProductSizeModel::class, 'product_id', 'id')->where('is_delete', 0);
@@ -256,29 +236,29 @@ class ProductModel extends Model
         }
 
         $query = self::select('product.*')
-                     ->join('category','category.id','=','product.category_id')
-                     ->where('product.is_public', 0)
-                     ->where('product.is_delete', 0);
+            ->join('category', 'category.id', '=', 'product.category_id')
+            ->where('product.is_public', 0)
+            ->where('product.is_delete', 0);
 
         // Convert category slugs to IDs if passed from request
         $filterSlugs = $request->input('category', []);
-        if(!empty($filterSlugs)) {
+        if (!empty($filterSlugs)) {
             $categoryIds = \App\Models\CategoryModel::whereIn('slug', $filterSlugs)->pluck('id')->toArray();
-            if(!empty($categoryIds)) {
+            if (!empty($categoryIds)) {
                 $query->whereIn('product.category_id', $categoryIds);
             }
-        } else if(!empty($category)) {
+        } else if (!empty($category)) {
             $query->whereIn('product.category_id', $category);
         }
 
         // Sorting
         $sort = $request->get('sort');
-        if($sort == 'most_recent') {
-            $query->orderBy('product.id','desc');   
-        } elseif($sort == 'lowest_price') {
-            $query->orderBy('product.price','asc');   
-        } elseif($sort == 'highest_price') {
-            $query->orderBy('product.price','desc');              
+        if ($sort == 'most_recent') {
+            $query->orderBy('product.id', 'desc');
+        } elseif ($sort == 'lowest_price') {
+            $query->orderBy('product.price', 'asc');
+        } elseif ($sort == 'highest_price') {
+            $query->orderBy('product.price', 'desc');
         } else {
             $query->orderBy(DB::raw('RAND("' . $seed . '")'));
         }
@@ -292,15 +272,15 @@ class ProductModel extends Model
     static public function getProductCounts()
     {
         return self::select('category_id', DB::raw('COUNT(*) as total'))
-        ->where('is_public', 0)
-        ->where('is_delete', 0)
-        ->groupBy('category_id')
-        ->pluck('total', 'category_id')
-        ->toArray();
+            ->where('is_public', 0)
+            ->where('is_delete', 0)
+            ->groupBy('category_id')
+            ->pluck('total', 'category_id')
+            ->toArray();
     }
 
     static public function getSearchProduct($request)
-    {   
+    {
         if (\Session::has('rand.search')) {
             $seed = \Session::get('rand.search');
         } else {
@@ -310,54 +290,65 @@ class ProductModel extends Model
 
 
         $return = self::select('product.*')
-                ->join('category','category.id','=','product.category_id')
-                ->where('product.is_public', '=', 0)
-                ->where('product.is_delete', '=', 0);
-                if(!empty($request->search))
-                {
-                    $search = $request->search;
-                    $return = $return->orWhere(function ($query) use ($search) {
-                        $query = $query->where('category.name','LIKE', '%'.$search.'%')
-                            ->orWhere('product.title', 'LIKE', '%'.$search.'%');
-                    });                
-                }
-                $return = $return->groupBy('product.id');
-                $return = $return->paginate(40);   
+            ->join('category', 'category.id', '=', 'product.category_id')
+            ->where('product.is_public', '=', 0)
+            ->where('product.is_delete', '=', 0);
+        if (!empty($request->search)) {
+            $search = $request->search;
+            $return = $return->orWhere(function ($query) use ($search) {
+                $query = $query->where('category.name', 'LIKE', '%' . $search . '%')
+                    ->orWhere('product.title', 'LIKE', '%' . $search . '%');
+            });
+        }
+        $return = $return->groupBy('product.id');
+        $return = $return->paginate(40);
         return $return;
     }
 
     public function getURL()
     {
-        return url('item/'.$this->slug);
+        return url('item/' . $this->slug);
     }
 
-    public function category() {
+    public function category()
+    {
         return $this->belongsTo(CategoryModel::class, "category_id", "id");
     }
 
 
     // get get color
-    public function getcolor() {
+    public function getcolor()
+    {
         return $this->hasMany(ProductColorModel::class, "product_id")->where('product_color.is_delete', 0)->orderBy('id', 'asc');
     }
 
     // get get size
-    public function getsize() {
-        return $this->hasMany(ProductSizeModel::class, "product_id")->where('product_size.is_delete','=', 0)->orderBy('id', 'asc');
+    public function getsize()
+    {
+        return $this->hasMany(ProductSizeModel::class, "product_id")->where('product_size.is_delete', '=', 0)->orderBy('id', 'asc');
     }
 
 
     // get product images
-    public function image() {
+    public function image()
+    {
         return $this->hasMany(ProductImageModel::class, "product_id")->orderBy('id', 'asc');
     }
 
+    public function firstImage()
+    {
+        return $this->hasOne(ProductImageModel::class, "product_id", "id")
+            ->orderBy('id', 'asc');
+    }
+
     //   get default one image
-    public function defaultPhoto() {
+    public function defaultPhoto()
+    {
         return $this->belongsTo(ProductImageModel::class, "id", "product_id")->orderBy('id', 'asc')->limit(1);
     }
 
-    public function photo() {
+    public function photo()
+    {
         if ($this->defaultPhoto && !empty($this->defaultPhoto->small) && file_exists('upload/' . $this->id . '/' . $this->defaultPhoto->small)) {
             return url('upload/' . $this->id . '/' . $this->defaultPhoto->small);
         } else {
@@ -365,7 +356,8 @@ class ProductModel extends Model
         }
     }
 
-    public function photobig() {
+    public function photobig()
+    {
         if ($this->defaultPhoto && !empty($this->defaultPhoto->name) && file_exists('upload/' . $this->id . '/' . $this->defaultPhoto->name)) {
             return url('upload/' . $this->id . '/' . $this->defaultPhoto->name);
         } else {
@@ -375,27 +367,28 @@ class ProductModel extends Model
 
     public function userwishlist()
     {
-        return  UsersWishlistModel::where('product_id','=',$this->id)->where('user_id','=',Auth::user()->id)->count();
+        return UsersWishlistModel::where('product_id', '=', $this->id)->where('user_id', '=', Auth::user()->id)->count();
     }
-    
+
 
     public function wishlistcount()
     {
-        return  UsersWishlistModel::where('product_id','=',$this->id)->count();
+        return UsersWishlistModel::where('product_id', '=', $this->id)->count();
     }
-    
+
     // get video
-    public function getVideoFile(){
+    public function getVideoFile()
+    {
         if (!empty($this->video_file) && file_exists('upload/' . $this->id . '/' . $this->video_file)) {
             return url('upload/' . $this->id . '/' . $this->video_file);
         } else {
             return '';
         }
-    } 
+    }
 
 
     static public function getFrontProductsHomeNewArrival()
-    {   
+    {
         if (\Session::has('rand.key')) {
             $seed = \Session::get('rand.key');
         } else {
@@ -405,19 +398,19 @@ class ProductModel extends Model
 
 
         $return = self::select('product.*')
-                ->join('category','category.id','=','product.category_id')
-                ->where('product.is_new_arrival', '=', 1)
-                ->where('product.is_public', '=', 0)
-                ->where('product.is_delete', '=', 0);
-                $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
-                $return = $return->groupBy('product.id');
-                $return = $return->paginate(40);   
+            ->join('category', 'category.id', '=', 'product.category_id')
+            ->where('product.is_new_arrival', '=', 1)
+            ->where('product.is_public', '=', 0)
+            ->where('product.is_delete', '=', 0);
+        $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
+        $return = $return->groupBy('product.id');
+        $return = $return->paginate(40);
         return $return;
     }
 
 
     static public function getFrontProductsHomeBestSelling()
-    {   
+    {
         if (\Session::has('rand.key')) {
             $seed = \Session::get('rand.key');
         } else {
@@ -427,19 +420,19 @@ class ProductModel extends Model
 
 
         $return = self::select('product.*')
-                ->join('category','category.id','=','product.category_id')
-                ->where('product.is_best_selling', '=', 1)
-                ->where('product.is_public', '=', 0)
-                ->where('product.is_delete', '=', 0);
-                $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
-              
-                $return = $return->groupBy('product.id');
-                $return = $return->paginate(40);   
+            ->join('category', 'category.id', '=', 'product.category_id')
+            ->where('product.is_best_selling', '=', 1)
+            ->where('product.is_public', '=', 0)
+            ->where('product.is_delete', '=', 0);
+        $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
+
+        $return = $return->groupBy('product.id');
+        $return = $return->paginate(40);
         return $return;
     }
 
     static public function getFrontProductsHomeFeatured()
-    {   
+    {
         if (\Session::has('rand.key')) {
             $seed = \Session::get('rand.key');
         } else {
@@ -449,18 +442,18 @@ class ProductModel extends Model
 
 
         $return = self::select('product.*')
-                ->join('category','category.id','=','product.category_id')
-                ->where('product.is_featured', '=', 1)
-                ->where('product.is_public', '=', 0)
-                ->where('product.is_delete', '=', 0);
-                $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
-                $return = $return->groupBy('product.id');
-                $return = $return->paginate(40);   
+            ->join('category', 'category.id', '=', 'product.category_id')
+            ->where('product.is_featured', '=', 1)
+            ->where('product.is_public', '=', 0)
+            ->where('product.is_delete', '=', 0);
+        $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
+        $return = $return->groupBy('product.id');
+        $return = $return->paginate(40);
         return $return;
     }
 
     static public function getFrontProductsApp()
-    {   
+    {
 
         if (\Session::has('rand.key')) {
             $seed = \Session::get('rand.key');
@@ -471,13 +464,13 @@ class ProductModel extends Model
 
 
         $return = self::select('product.*')
-                ->join('category','category.id','=','product.category_id')
-                ->where('product.is_featured', '=', 1)
-                ->where('product.is_public', '=', 0)
-                ->where('product.is_delete', '=', 0);
-                $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
-                $return = $return->groupBy('product.id');
-                $return = $return->paginate(16);  
+            ->join('category', 'category.id', '=', 'product.category_id')
+            ->where('product.is_featured', '=', 1)
+            ->where('product.is_public', '=', 0)
+            ->where('product.is_delete', '=', 0);
+        $return = $return->orderBy(DB::raw('RAND("' . $seed . '")'));
+        $return = $return->groupBy('product.id');
+        $return = $return->paginate(16);
         return $return;
     }
 

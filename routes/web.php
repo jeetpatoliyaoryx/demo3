@@ -42,6 +42,7 @@ Route::get('/clear_cache', function () {
 
 Route::get('privacy', [IndexController::class, 'privacy']);
 Route::get('terms', [IndexController::class, 'terms']);
+Route::get('cancellation_policy', [IndexController::class, 'cancellation_policy']);
 Route::get('shipping-refund', [IndexController::class, 'shipping_refund']);
 Route::get('return-policy', [IndexController::class, 'return_policy']);
 Route::get('about', [IndexController::class, 'about']);
@@ -304,6 +305,14 @@ Route::group(['middleware' => 'admin'], function () {
    Route::get('admin/privacy_policy/edit/{id}', [AllPolicyPageController::class, 'privacy_policy_edit']);
    Route::post('admin/privacy_policy/edit/{id}', [AllPolicyPageController::class, 'privacy_policy_update']);
    Route::get('admin/privacy_policy/delete/{id}', [AllPolicyPageController::class, 'privacy_policy_delete']);
+
+
+   Route::get('admin/cancellation_policy', [AllPolicyPageController::class, 'cancellation_policy']);
+   Route::get('admin/cancellation_policy/add', [AllPolicyPageController::class, 'cancellation_policy_add']);
+   Route::post('admin/cancellation_policy/add', [AllPolicyPageController::class, 'cancellation_policy_store']);
+   Route::get('admin/cancellation_policy/edit/{id}', [AllPolicyPageController::class, 'cancellation_policy_edit']);
+   Route::post('admin/cancellation_policy/edit/{id}', [AllPolicyPageController::class, 'cancellation_policy_update']);
+   Route::get('admin/cancellation_policy/delete/{id}', [AllPolicyPageController::class, 'cancellation_policy_delete']);
 
    Route::get('admin/return_refund', [AllPolicyPageController::class, 'return_refund']);
    Route::get('admin/return_refund/add', [AllPolicyPageController::class, 'return_refund_add']);
