@@ -593,7 +593,6 @@ class CartController extends Controller
     public function place_order(Request $request)
     {
         if (!empty(Auth::user()->id)) {
-            dd(Auth::user()->id);
             $user = User::get_single(Auth::user()->id);
             $user->name = trim($request->first_name);
             $user->last_name = trim($request->last_name);
