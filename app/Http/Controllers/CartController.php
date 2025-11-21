@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserRegister;
 use Illuminate\Http\Request;
 use App\Models\OrdersModel;
 use App\Models\ProductModel;
@@ -592,7 +593,7 @@ class CartController extends Controller
     public function place_order(Request $request)
     {
         if (!empty(Auth::user()->id)) {
-
+            dd(Auth::user()->id);
             $user = User::get_single(Auth::user()->id);
             $user->name = trim($request->first_name);
             $user->last_name = trim($request->last_name);
@@ -609,8 +610,10 @@ class CartController extends Controller
 
         } else {
 
-            $time = date('His');
-            $password = Hash::make($time);
+            $cleanName = preg_replace('/\s+/', '', $request->first_name);
+            $randomDigits = rand(100, 999);
+            $plainPassword = $cleanName . '@' . $randomDigits;
+            $password = Hash::make($plainPassword);
             $checkUser = User::checkUserEmail($request->email);
             if (!empty($checkUser)) {
                 return response()->json([
@@ -632,7 +635,14 @@ class CartController extends Controller
                 $user->remember_token = Str::random(50);
                 $user->status = 1;
                 $user->password = $password;
+
                 $user->save();
+
+                try {
+                    Mail::to($user->email)->send(new UserRegister($user, $plainPassword));
+                } catch (Throwable $e) {
+                    \Log::error("Register Mail Failed: " . $e->getMessage());
+                }
 
                 $user_id = $user->id;
 
@@ -798,13 +808,16 @@ class CartController extends Controller
 
                 }
                 \Cart::clear();
+                $order = OrdersModel::with([
+                    'items.product.image'
+                ])->find($order->id);
                 try {
                     Mail::to($order->email)
-                        ->send(new UserPurchaseProductMail($order, $order->total));
-
+                        ->send(new UserPurchaseProductMail($order));
                 } catch (Throwable $e) {
                     \Log::error("Order Mail Failed: " . $e->getMessage());
                 }
+
 
                 return response()->json([
                     'status' => true,

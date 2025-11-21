@@ -26,6 +26,19 @@ class CategoryModel extends Model
         return self::where('parent_id', '=', $parent_id)->get();
     }
 
+    public static function getParentChain($id)
+    {
+        $chain = [];
+        $cat = self::find($id);
+
+        while ($cat && $cat->parent_id != 0) {
+            $chain[] = $cat->parent_id;
+            $cat = self::find($cat->parent_id);
+        }
+
+        return array_reverse($chain);
+    }
+
     static public function getParentCategoryAdmin($parent_id)
     {
         return self::where('parent_id', '=', $parent_id)->where('status', '=', 0)->get();
@@ -295,7 +308,7 @@ class CategoryModel extends Model
                 break;
 
             $chain[] = $cat->id;
-            $id = $cat->parent_id; 
+            $id = $cat->parent_id;
         }
 
         return array_reverse($chain);

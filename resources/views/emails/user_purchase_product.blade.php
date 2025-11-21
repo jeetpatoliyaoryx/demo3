@@ -1,303 +1,288 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YourStore.in | Order Invoice</title>
-<style>
-  body {
-    margin: 0;
-    padding: 0;
-    background-color: #0d0d0d;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    color: #e5e5e5;
-  }
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
-  .container {
-    max-width: 620px;
-    margin: 0 auto;
-    background-color: #1a1a1a;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(212,175,55,0.15);
-  }
-  .header {
-    background-color: #000;
-    color: #d4af37;
-    text-align: center;
-    padding: 25px 15px;
-  }
-  .header h1 {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: 1px;
-  }
-  .content {
-    padding: 25px 20px;
-  }
-  .content h2 {
-    color: #d4af37;
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-  .summary {
-    background-color: #141414;
-    border: 1px solid #2a2a2a;
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 20px;
-  }
-  .summary p {
-    margin: 5px 0;
-    font-size: 14px;
-    color: #ccc;
-  }
-  .order-table {
-    width: 100%;
-    border: 1px solid #2a2a2a;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 25px;
-  }
-  .order-table th {
-    background-color: #000;
-    color: #d4af37;
-    padding: 10px;
-    font-size: 13px;
-    text-align: left;
-  }
+    <meta charset="UTF-8" />
+    <title>Order Confirmation</title>
 
-  /* --- Updated order-item section --- */
-  .order-item {
-    background-color: #141414;
-  }
-  .order-item td {
-    padding: 10px;
-    border-top: 1px solid #2a2a2a;
-    vertical-align: middle;
-    font-size: 13px;
-  }
-  .order-item img {
-    border-radius: 6px;
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    display: block;
-  }
+    <style>
+        body {
+            background: #000;
+            color: #fff !important;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 0;
+            margin: 0;
+        }
 
-  .total {
-    font-weight: bold;
-    background-color: #0d0d0d;
-    color: #d4af37;
-    padding: 10px;
-    width: 100%;
-  }
-  .total td {
-    padding: 10px;
-  }
+        .container {
+            max-width: 750px;
+            margin: auto;
+            padding: 20px;
+            background: #111;
+        }
 
-  .section {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-  }
-  .section h3 {
-    color: #d4af37;
-    font-size: 15px;
-    margin-bottom: 6px;
-  }
-  .section p {
-    font-size: 13px;
-    color: #ccc;
-    margin: 3px 0;
-  }
+        h2,
+        h3,
+        p,
+        td,
+        th {
+            color: #fff !important;
+        }
 
-  .btn {
-    display: inline-block;
-    background: linear-gradient(90deg, #d4af37, #f1c24a);
-    color: #000;
-    text-decoration: none;
-    padding: 12px 25px;
-    border-radius: 30px;
-    font-weight: bold;
-    font-size: 14px;
-    margin-top: 25px;
-    transition: 0.3s;
-  }
+        .box {
+            background: #1b1b1b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+        }
 
-  .footer {
-    background-color: #000;
-    text-align: center;
-    color: #aaa;
-    padding: 25px 15px;
-    font-size: 13px;
-    border-top: 1px solid #2a2a2a;
-  }
-  .footer a {
-    color: #d4af37;
-    text-decoration: none;
-    margin: 0 6px;
-  }
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1b1b1b;
+        }
 
-  /* 🔹 Mobile Optimization */
-  @media screen and (max-width: 600px) {
-    .container {
-      width: 100% !important;
-      border-radius: 0;
-    }
-    .content {
-      padding: 20px 15px !important;
-    }
-    .order-table {
-      border: none;
-    }
-    .order-table thead {
-      display: none;
-    }
+        .order-table th {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            font-size: 15px;
+            color: #ffd447 !important;
+        }
 
-    /* ✅ Full-width card-style order items */
-    .order-table tbody,
-    .order-item,
-    .order-item td {
-      display: block !important;
-      width: 100% !important;
-      box-sizing: border-box;
-    }
-    .order-item {
-      background-color: #141414;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      padding: 15px !important;
-    }
-    .order-item td {
-      border: none;
-      padding: 6px 0 !important;
-    }
-    .order-item td::before {
-      content: attr(data-label);
-      font-weight: bold;
-      color: #d4af37;
-      display: block;
-      font-size: 13px;
-      margin-bottom: 3px;
-    }
-    .order-item img {
-      width: 100%;
-      max-width: 100px;
-      height: auto;
-      margin-bottom: 10px;
-    }
-    .btn {
-      width: 100%;
-      text-align: center;
-      padding: 12px 0;
-    }
-    .section p, .summary p {
-      font-size: 13px;
-    }
-    .total{
-        width: 100%; 
-        display: block;
-    }
-  }
-</style>
+        .order-table td {
+            padding: 10px;
+            border-bottom: 1px solid #222;
+            color: #fff !important;
+        }
 
+        .order-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+
+        .total td {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .section {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .billing-address,
+        .shipping-address {
+            width: 48%;
+            background: #1b1b1b;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        h3 {
+            color: #ffd447 !important;
+            margin-bottom: 10px;
+        }
+
+        .track-btn {
+            display: block;
+            width: 180px;
+            margin: 30px auto;
+            text-align: center;
+            padding: 12px 0;
+            background: #ffd447;
+            color: #000 !important;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 30px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: #1b1b1b;
+        }
+
+        .header {
+            color: #ffd447 !important;
+            margin: 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px 10px;
+            color: #ffffff;
+            font-size: 14px;
+            background: #111111;
+        }
+    </style>
 </head>
+
 <body>
-  <table class="container" cellpadding="0" cellspacing="0">
-    <tr>
-      <td class="header">
-        <h1>YourStore.in</h1>
-      </td>
-    </tr>
-    <tr>
-      <td class="content">
-        <h2>Order Confirmed ✨</h2>
-        <p>Hi <strong>John Doe</strong>, your order <strong>#YS123456</strong> has been confirmed successfully.</p>
 
-        <div class="summary">
-          <p><strong>Order Date:</strong> Oct 31, 2025</p>
-          <p><strong>Payment:</strong> Razorpay (Paid)</p>
-          <p><strong>Delivery:</strong> Expected by Nov 5, 2025</p>
-        </div>
+    <table width="100%" role="presentation" cellpadding="0" cellspacing="0">
+        <!-- HEADER -->
+  
 
-        <table class="order-table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Qty</th>
-              <th>Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="order-item">
-              <td data-label="Item">
-                <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600" alt="T-Shirt"><br>
-                Classic White T-ShirtClassic White T-ShirtClassic White T-ShirtClassic White T-ShirtClassic White T-ShirtClassic White T-Shirt
-              </td>
-              <td data-label="Qty">1</td>
-              <td data-label="Price">₹499</td>
-            </tr>
-            <tr class="order-item">
-              <td data-label="Item">
-                <img src="https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?w=600" alt="Blue Jeans"><br>
-                Blue Denim Jeans
-              </td>
-              <td data-label="Qty">1</td>
-              <td data-label="Price">₹1,199</td>
-            </tr>
-            <tr class="total">
-              <td colspan="2" align="right">Total:-</td>
-              <td align="right">₹1,698</td>
-            </tr>
-          </tbody>
-        </table>
+        <tr>
+            <td>
+                <div class="container">
 
-        <h2>Customer Information</h2>
-        <div class="section">
-            <div class="billing-address">
-                <h3>Billing Address</h3>
-                <p>John Doe</p>
-                <p>Sunrise Complex, 45 MG Road, </p>
-                <p>Mumbai, MH 400001</p>
-                <p>India</p>
-            </div>
-            <div class="shipping-address">
-                <h3>Shipping Address</h3>
-                <p>John Doe</p>
-                <p>Sunrise Complex, 45 MG Road</p>
-                <p>Mumbai, MH 400001</p>
-                <p>India</p>
-            </div>
-        </div>
+                <h1 class="header" style="
+                text-align:center;
+                background:#000;
+                padding:25px 0;
+                margin:0 0 25px 0;
+                color:#ffd447;
+                font-size:26px;
+                font-weight:600;
+                    ">
+                    YourStore.ina
+                </h1>
 
-        <center>
-          <a href="#" class="btn">Track Order</a>
-        </center>
+                    <h2 style="color:#ffd447 !important;">Order Confirmed ✨</h2>
 
-        <p style="margin-top:30px; text-align:center; font-size:13px; color:#d4af37;">
-          Thank you for choosing YourStore.in 💛<br>
-          We appreciate your trust in us.
-        </p>
-      </td>
-    </tr>
-    <tr>
-      <td class="footer">
-        <p>Need help? Contact us:</p>
-        <p>
-          📧 <a href="mailto:support@yourstore.in">support@yourstore.in</a><br>
-          💬 <a href="https://wa.me/919999999999">WhatsApp</a> |
-          📸 <a href="https://instagram.com/yourstore">Instagram</a> |
-          👍 <a href="https://facebook.com/yourstore">Facebook</a>
-        </p>
-        <p>© 2025 YourStore.in — All Rights Reserved</p>
-      </td>
-    </tr>
-  </table>
+                    <p>
+                        Hi <strong>{{ $order->first_name }} {{ $order->last_name }}</strong>,
+                        your order <strong>#YS{{ $order->id }}</strong> has been confirmed successfully.
+                    </p>
+
+                    <div class="box">
+                        <p><strong>Order Date:</strong> {{ date('M d, Y', strtotime($order->created_at)) }}</p>
+                        <p><strong>Payment:</strong> {{ $order->payment_method }} {{ ucfirst($order->payment_status) }}
+                        </p>
+                        <p><strong>Delivery:</strong> Expected by {{ date('M d, Y', strtotime('+5 days')) }}</p>
+                    </div>
+
+                    <!-- ORDER TABLE -->
+                    <table class="order-table" role="presentation">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach($items as $item)
+                                @php
+                                    $imageRow = $item->product->image->first() ?? null;
+                                    $imgFile = $imageRow->small ?? $imageRow->name ?? $imageRow->orignal ?? null;
+
+                                    $imgUrl = $imgFile
+                                        ? url('upload/' . $item->product_id . '/' . $imgFile)
+                                        : url('/no-image.png');
+
+                                    $itemPrice = (float) $item->price;
+                                    $itemQty = (int) $item->qty;
+                                    $itemSubtotal = number_format($itemQty * $itemPrice, 2);
+
+                                    $productName = $item->product->title ?? $item->product->name ?? 'Product';
+                                @endphp
+
+                                <tr class="order-item">
+
+                                    <td>
+                                        <img src="{{ $imgUrl }}" alt="Product">
+                                    </td>
+
+                                    <td>{{ $productName }}</td>
+
+                                    <td>{{ $itemQty }}</td>
+
+                                    <td>₹{{ $itemSubtotal }}</td>
+
+                                </tr>
+
+                            @endforeach
+
+                            <tr class="total">
+                                <td colspan="3" align="right">Total:</td>
+                                <td align="right">
+                                    ₹{{ number_format($order->final_total ?? $order->total, 2) }}
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                    <!-- BILLING + SHIPPING -->
+                    <div class="section">
+                        <div class="billing-address">
+                            <h3>Billing Address</h3>
+                            <p>{{ $order->first_name }} {{ $order->last_name }}</p>
+                            <p>{{ $order->street_address }}{{ $order->flat_other ? ', ' . $order->flat_other : '' }}</p>
+                            <p>{{ $order->city }}, {{ $order->state }} {{ $order->pin_code }}</p>
+                            <p>{{ $order->country->name ?? '' }}</p>
+                        </div>
+
+                        <div class="shipping-address">
+                            <h3>Shipping Address</h3>
+                            <p>{{ $order->first_name }} {{ $order->last_name }}</p>
+                            <p>{{ $order->street_address }}{{ $order->flat_other ? ', ' . $order->flat_other : '' }}</p>
+                            <p>{{ $order->city }}, {{ $order->state }} {{ $order->pin_code }}</p>
+                            <p>{{ $order->country->name ?? '' }}</p>
+                        </div>
+                    </div>
+
+                    <!-- TRACK ORDER BUTTON -->
+                    <a href="{{ route('admin.orders.track', $order->id) }}" class="track-btn">Track Order</a>
+
+                    <div class="footer" style="
+    text-align: center;
+    padding: 25px 10px;
+    color: #ffffff;
+    font-size: 14px;
+    background: #111111;
+    margin-top:40px;
+    border-top:1px solid #222;
+">
+                        <p style="margin: 0 0 6px; color:#ffffff;">
+                            Need help? Contact us:
+                        </p>
+
+                        <p style="margin: 0 0 10px; color:#ffffff;">
+                            📧
+                            <a href="mailto:{{ config('mail.from.address') ?? 'support@yourstore.in' }}"
+                                style="color:#f4c542; text-decoration:none;">
+                                {{ config('mail.from.address') ?? 'support@yourstore.in' }}
+                            </a>
+                            <br>
+
+                            💬
+                            <a href="https://wa.me/919999999999"
+                                style="color:#f4c542; text-decoration:none;">WhatsApp</a> |
+
+                            📸
+                            <a href="https://instagram.com/yourstore"
+                                style="color:#f4c542; text-decoration:none;">Instagram</a>
+                            |
+
+                            👍
+                            <a href="https://facebook.com/yourstore"
+                                style="color:#f4c542; text-decoration:none;">Facebook</a>
+                        </p>
+
+                        <p style="margin: 10px 0 0; color:#aaaaaa; font-size:13px;">
+                            © {{ date('Y') }} YourStore.in — All Rights Reserved
+                        </p>
+                    </div>
+
+
+
+                </div>
+            </td>
+        </tr>
+
+    </table>
+
 </body>
+
 </html>

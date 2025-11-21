@@ -93,23 +93,39 @@ class CategoryController extends Controller
         $category->save();
 
         // return redirect('admin/category')->with('success', "Category Successfully saved");
-        return redirect('admin/category')->with('success', "Category Successfully saved");
+        return redirect()->back()->with('success', "Category Successfully saved");
+    }
+    private function getParentChain($id)
+    {
+        $chain = [];
+        $category = CategoryModel::find($id);
+
+        while ($category && $category->parent_id != 0) {
+            $chain[] = $category->parent_id;
+            $category = CategoryModel::find($category->parent_id);
+        }
+
+        return array_reverse($chain);
     }
 
     public function edit($id)
     {
         $data['meta_title'] = "Edit Category";
         $data['getParentCategory'] = CategoryModel::getParentCategory(0);
-        $data['getrecord'] = CategoryModel::get_single($id);
 
-        $data['parentChain'] = CategoryModel::getParentHierarchy($id);
+        $getrecord = CategoryModel::get_single($id);
+        $data['getrecord'] = $getrecord;
+
+        // 🔥 MUST ADD THIS
+        $data['parentChain'] = $this->getParentChain($id);
 
         return view('backend.category.edit', $data);
     }
 
 
 
-    public function post_edit($id, Request $request)
+
+     public function post_edit($id, Request $request)
     {
 
         $array = array_filter($request->parent_id ?? []);
@@ -154,7 +170,6 @@ class CategoryController extends Controller
 
         return redirect('admin/category')->with('success', "Category Successfully update");
     }
-
     private function updateChildStatus($parentId, $status)
     {
         $children = CategoryModel::where('parent_id', $parentId)->get();
@@ -170,31 +185,51 @@ class CategoryController extends Controller
 
     public function getParent(Request $request)
     {
-        $categories = CategoryModel::getParentCategory($request->parent_id);
+        $children = CategoryModel::where('parent_id', $request->parent_id)->get();
 
-        if ($categories->count() == 0) {
-            return response()->json(['success' => 0]);
+        $html = '';
+
+        if ($children->count() > 0) {
+
+            $html .= '<div style="margin-top:10px;">
+                    <select class="form-control ParentCategory" name="parent_id[]">
+                        <option value="">None</option>';
+
+            foreach ($children as $child) {
+                $html .= '<option value="' . $child->id . '">' . $child->name . '</option>';
+            }
+
+            $html .= '</select></div>';
         }
 
-        $html = '<div class="sub-parent-box" style="margin-bottom:5px;">';
-        $html .= '<select class="form-control SubParentCategory" name="parent_id[]" data-level="' . $request->level . '">';
-        $html .= '<option value="">None</option>';
-
-        foreach ($categories as $cat) {
-            $html .= '<option value="' . $cat->id . '">' . $cat->name . '</option>';
-        }
-
-        $html .= '</select>';
-        $html .= '</div>';
-
-        return response()->json(['success' => $html]);
+        return response()->json(['html' => $html]);
     }
 
 
- public function getSubParent(Request $request)
-{
-    return $this->getParent($request);
-}
+
+
+    public function getSubParent(Request $request)
+    {
+        $getParentCategory = CategoryModel::getParentCategory($request->parent_id);
+        if ($getParentCategory->count() > 0) {
+            $html = '';
+            $html .= '<div style="margin-bottom: 5px;">
+                      <select class="form-control"  name="parent_id[]">
+                          <option value="">None</option>';
+            foreach ($getParentCategory as $key => $value) {
+                $html .= '<option value="' . $value->id . '">' . $value->name . '</option>';
+            }
+            $html .= '</select>
+                   </div>';
+
+            $json['success'] = $html;
+
+        } else {
+            $json['success'] = 0;
+        }
+
+        echo json_encode($json);
+    }
 
 
 }

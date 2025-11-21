@@ -216,6 +216,12 @@
                                                 <i data-feather="align-left"></i> Terms & Conditions
                                             </a>
                                         </li>
+                                         <li>
+                                            <a href="{{ url('admin/cancellation_policy') }}" 
+                                                class="@if(Request::segment(2) == 'cancellation_policy') @endif">
+                                                <i data-feather="align-left"></i> Cancellation Policy
+                                            </a>
+                                        </li>
 
                                     </ul>
                                 </li>
