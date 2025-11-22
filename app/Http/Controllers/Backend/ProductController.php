@@ -119,6 +119,9 @@ class ProductController extends Controller
 
     public function UpdateProduct($id, Request $request)
     {
+        dd($request->variants);
+
+
         $product = ProductModel::get_single($id);
 
         $category_id = 0;
